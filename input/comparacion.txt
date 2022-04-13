@@ -1,0 +1,4 @@
+while (x comp y) {}
+while ((x comp y) comp z) {}
+while (x comp (y comp z)) {}
+while ((w comp x) comp (y comp z)) {}

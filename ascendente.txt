@@ -1,0 +1,118 @@
+operacion : term ;
+
+term : term exp
+     | NUMERO
+     | '(' term ')'
+     ;
+
+exp : '+' term
+    | '-' term
+    |
+    ;
+
+
+7 - ( 2 + 9 )
+
+$ operacion		7 - ( 2 + 9 ) $ DERIVAR
+$ term			7 - ( 2 + 9 ) $ DERIVAR
+$ exp term		7 - ( 2 + 9 ) $ DERIVAR
+$ exp NUMERO		7 - ( 2 + 9 ) $ MATCH
+$ exp 			  - ( 2 + 9 ) $ DERIVAR
+$ term -		  - ( 2 + 9 ) $ MATCH
+$ term 			    ( 2 + 9 ) $ DERIVAR
+$ ) term (		    ( 2 + 9 ) $ MATCH
+$ ) term 		      2 + 9 ) $ DERIVAR
+$ ) exp term 		      2 + 9 ) $ DERIVAR
+$ ) exp NUMERO 		      2 + 9 ) $ MATCH
+$ ) exp 			+ 9 ) $ DERIVAR
+$ ) term +		        + 9 ) $ MATCH
+$ ) term  		          9 ) $ DERIVAR
+$ ) NUMERO  		          9 ) $ MATCH
+$ ) 			            ) $ MATCH
+$   			              $ OK
+
+$			7 - ( 2 + 9 ) $ DESPLAZAR
+$ 7			  - ( 2 + 9 ) $ DESPLAZAR
+$ NUMERO		  - ( 2 + 9 ) $ REDUCIR
+$ term			  - ( 2 + 9 ) $ DESPLAZAR
+$ term -		    ( 2 + 9 ) $ DESPLAZAR
+$ term - (		      2 + 9 ) $ DESPLAZAR
+$ term - ( 2		        + 9 ) $ REDUCIR
+$ term - ( NUMERO	        + 9 ) $ REDUCIR
+$ term - ( term +	          9 ) $ DESPLAZAR
+$ term - ( term + 9	            ) $ REDUCIR
+$ term - ( term + NUMERO            ) $ REDUCIR
+$ term - ( term + term	            ) $ REDUCIR
+$ term - ( term exp	            ) $ REDUCIR
+$ term - ( term		            ) $ DESPLAZAR
+$ term - ( term )	              $ REDUCIR
+$ term - term		              $ REDUCIR
+$ term exp		              $ REDUCIR
+$ term 			              $ REDUCIR
+$ operacion		              $ REDUCIR
+
+
+5 + ( 6 - 4
+
+$ operacion		5 + ( 6 - 4 $ DERIVAR
+$ term			5 + ( 6 - 4 $ DERIVAR
+$ exp term		5 + ( 6 - 4 $ DERIVAR
+$ exp NUMERO		5 + ( 6 - 4 $ MATCH
+$ exp 			  + ( 6 - 4 $ DERIVAR
+$ term +		  + ( 6 - 4 $ MATCH
+$ term  		    ( 6 - 4 $ DERIVAR
+$ ) term (  		    ( 6 - 4 $ MATCH
+$ ) term    		      6 - 4 $ DERIVAR
+$ ) exp term   		      6 - 4 $ DERIVAR
+$ ) exp NUMERO		      6 - 4 $ MATCH
+$ ) exp 		        - 4 $ DERIVAR
+$ ) term - 		        - 4 $ MATCH
+$ ) term  		          4 $ DERIVAR
+$ ) NUMERO  		          4 $ MATCH
+$ ) 	  		            $ ERROR
+
+$			5 + ( 6 - 4 $ DESPLAZAR
+$ 5			  + ( 6 - 4 $ REDUCIR
+$ NUMERO		  + ( 6 - 4 $ REDUCIR
+$ term			  + ( 6 - 4 $ DESPLAZAR
+$ term +		    ( 6 - 4 $ DESPLAZAR
+$ term + (		      6 - 4 $ DESPLAZAR
+$ term + ( 6		        - 4 $ REDUCIR
+$ term + ( NUMERO	        - 4 $ REDUCIR
+$ term + ( term		        - 4 $ DESPLAZAR
+$ term + ( term -	          4 $ DESPLAZAR
+$ term + ( term - 4	          4 $ REDUCIR
+$ term + ( term - NUMERO            $ REDUCIR
+$ term + ( term - term	            $ REDUCIR
+$ term + ( term exp		    $ REDUCIR
+$ term + ( term 		    $ ERROR
+
+
+5 + 6 ) - 4
+
+$ operacion		5 + 6 ) - 4 $ DERIVAR
+$ term			5 + 6 ) - 4 $ DERIVAR
+$ exp term		5 + 6 ) - 4 $ DERIVAR
+$ exp NUMERO		5 + 6 ) - 4 $ MATCH
+$ exp 			  + 6 ) - 4 $ DERIVAR
+$ term +		  + 6 ) - 4 $ MATCH
+$ term  		    6 ) - 4 $ DERIVAR
+$ NUMERO		    6 ) - 4 $ MATCH
+$ 	  		      ) - 4 $ ERROR
+
+$			5 + 6 ) - 4 $ DESPLAZAR
+$ 5			  + 6 ) - 4 $ REDUCIR
+$ NUMERO		  + 6 ) - 4 $ REDUCIR
+$ term			  + 6 ) - 4 $ DESPLAZAR
+$ term +		    6 ) - 4 $ DESPLAZAR
+$ term + 6		      ) - 4 $ REDUCIR
+$ term + NUMERO		      ) - 4 $ REDUCIR
+$ term + term		      ) - 4 $ REDUCIR
+$ term exp		      ) - 4 $ REDUCIR
+$ term			      ) - 4 $ DESPLAZAR
+$ term ) 		        - 4 $ DESPLAZAR
+$ term ) -		          4 $ DESPLAZAR
+$ term ) - 4		            $ REDUCIR
+$ term ) - NUMERO	            $ REDUCIR
+$ term ) - term		            $ REDUCIR
+$ term ) exp		            $ ERROR
