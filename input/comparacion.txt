@@ -1,4 +1,8 @@
-while (x comp y) {}
-while ((x comp y) comp z) {}
-while (x comp (y comp z)) {}
-while ((w comp x) comp (y comp z)) {}
+while (x > y) { 
+    int x;
+    double y;
+    int z = 0;
+    double w, q, t;
+    int a = 5, b, c = 10;
+    x = 1;
+    z = y; }
