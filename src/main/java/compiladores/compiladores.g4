@@ -4,58 +4,67 @@ grammar compiladores;
 package compiladores;
 }
 
-fragment LETRA : [A-Za-z] ;
 fragment DIGITO : [0-9] ;
 
+SUMA : '+';
+RESTA : '-';
+MULT : '*';
+DIV : '/';
+MOD : '%';
+AND : '&&';
+OR : '||';
 PA: '(';
 PC: ')';
-CA: '[';
-CC: ']';
-LA: '{';
-LC: '}';
-INT: 'int' ;
-DOUBLE: 'double' ;
-COMA: ',' ;
-FIN: ';' ;
-IGUAL: '=';
-tipoDato: INT | DOUBLE ;
-COMPARADOR: '==' | '!=' | '>' | '>=' | '<' | '<='  ;
-NUMERO : DIGITO+ ;
-ID : (LETRA | '_')(LETRA | DIGITO | '_')* ;
+IGUALDAD : '==';
+DESIGUALDAD : '!=';
+MENOR : '<';
+MAYOR : '>';
+MENOR_IGUAL : '<=';
+MAYOR_IGUAL : '>=';
+comparador : IGUALDAD | DESIGUALDAD | MENOR | MAYOR | MENOR_IGUAL | MAYOR_IGUAL;
 
-si: instrucciones EOF;
+ENTERO : DIGITO+;
 
-instrucciones: instruccion instrucciones
-             | 
-             ;
+WS : [ \t\n\r] -> skip;
 
-instruccion: inst_simple
-           | bloque
-           | iwhile
-           ;
+si: programa EOF;
 
-inst_simple: declaracion
-           | asignacion
-           ;
-
-declaracion : tipoDato expresion FIN ;
-
-expresion: ID expresion
-         | COMA expresion
-         | asignar expresion
+programa : opal programa
          |
          ;
 
-asignacion: asignar FIN ;
+opal : term and;
 
-asignar: ID IGUAL (NUMERO|ID) ;
+term : factor t;
 
-bloque: LA instrucciones LC ;
+factor : ENTERO
+       | PA opal PC
+       |
+       ;
 
-iwhile: 'while' PA comparacion PC (bloque|inst_simple);
+t : MULT factor t
+  | DIV factor t
+  | MOD factor t
+  |
+  ; 
 
-comparacion: (NUMERO|ID) COMPARADOR (NUMERO|ID);
+exp : SUMA term exp
+    | RESTA term exp
+    | 
+    ;
 
-WS : [ \t\n\r] -> skip; // Saltea los saltos de linea, espacios en blanco, y retornos de carro
+comp : exp c
+     |
+     ;
 
-OTRO : . ;
+c : comparador term exp
+  |
+  ;
+
+and : comp a
+    |
+    ;
+
+a : '&&' term and
+  |
+  ;
