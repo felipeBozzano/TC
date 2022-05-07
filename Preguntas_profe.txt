@@ -1,0 +1,10 @@
+El for puede tener la forma:
+for (1 ; 1; 1) ----- Es decir, pueden solamente haber numeros en los parametros del for.
+
+Las asignaciones pueden tener esta forma:
+++x
+--x
+x++
+x--
+
+Como terminamos el programa?

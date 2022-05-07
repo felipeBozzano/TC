@@ -29,7 +29,7 @@ MAYOR_IGUAL : '>=';
 INT: 'int' ;
 DOUBLE: 'double' ;
 COMA: ',' ;
-FIN: ';' ;
+PUNTOYCOMA: ';' ;
 IGUAL: '=';
 tipoDato: INT | DOUBLE ;
 comparador : IGUALDAD | DESIGUALDAD | MENOR | MAYOR | MENOR_IGUAL | MAYOR_IGUAL;
@@ -38,7 +38,12 @@ ID : (LETRA | '_')(LETRA | DIGITO | '_')* ;
 
 WS : [ \t\n\r] -> skip;
 
+
+/*-----------------------------               INICIO                ----------------------------------*/
+
 si: instrucciones EOF;
+
+/*-----------------------------             INSTRUCCIONES           ----------------------------------*/
 
 instrucciones: instruccion instrucciones
              | 
@@ -46,14 +51,19 @@ instrucciones: instruccion instrucciones
 
 instruccion: inst_simple
            | bloque
-           | iwhile
+           | funcion
+           | bloqueDeControl
            ;
 
 inst_simple: declaracion
            | asignacion
            ;
 
-declaracion : tipoDato expresion FIN ;
+bloque: LA instrucciones LC ;
+
+/*-----------------------------      DECLARACIONES ASIGNACIONES      ----------------------------------*/
+
+declaracion : tipoDato expresion PUNTOYCOMA ;
 
 expresion: ID expresion
          | COMA expresion
@@ -61,13 +71,49 @@ expresion: ID expresion
          |
          ;
 
-asignacion: asignar FIN ;
+asignacion: asignar PUNTOYCOMA ;
 
-asignar: ID IGUAL opal ;
+asignar: ID IGUAL (opal|invocacionFuncion) ;
 
-bloque: LA instrucciones LC ;
+/*-----------------------------               FUNCIONES              ----------------------------------*/
+
+funcion: declaracionFuncion PUNTOYCOMA
+       | invocacionFuncion PUNTOYCOMA
+       | definicionFuncion
+       ;
+
+declaracionFuncion: tipoDato ID PA listaParams PC;
+
+listaParams: (param COMA)* param;
+
+param: tipoDato ID?;
+
+invocacionFuncion: ID PA listaArgs PC;
+
+listaArgs: ((ID|ENTERO|invocacionFuncion) COMA)* (ID|ENTERO|invocacionFuncion);
+
+definicionFuncion: tipoDato ID PA listaParamsObligatorios PC bloque;
+
+listaParamsObligatorios: (paramObligatorio COMA)* paramObligatorio;
+
+paramObligatorio: tipoDato ID;
+
+/*-----------------------------           WHILE, IF, FOR             ----------------------------------*/
+
+bloqueDeControl: iwhile
+               | iif
+               | ifor
+               ;
 
 iwhile: 'while' PA opal PC (bloque|inst_simple);
+
+iif: 'if' PA opal PC (bloque|inst_simple);
+
+ifor: 'for' PA condicionFor PC (bloque|inst_simple);
+
+condicionFor: (ID|asignar)? PUNTOYCOMA opal PUNTOYCOMA asignar?;
+
+/*-----------------------------                OPAL                  ----------------------------------*/
 
 opal : term or;
 
