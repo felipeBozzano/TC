@@ -27,13 +27,9 @@ ENTERO : DIGITO+;
 
 WS : [ \t\n\r] -> skip;
 
-si: programa EOF;
+programa : opal EOF;
 
-programa : opal programa
-         |
-         ;
-
-opal : term and;
+opal : term or;
 
 term : factor t;
 
@@ -65,6 +61,14 @@ and : comp a
     |
     ;
 
-a : '&&' term and
+a : AND term and
+  |
+  ;
+
+or : and o
+   |
+   ;
+
+o : OR term or
   |
   ;
