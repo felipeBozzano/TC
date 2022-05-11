@@ -28,3 +28,11 @@ dentro de otro y luego lo cerramos, ese contexto va a ser el último, por lo que
 -- searchID
 -- addContext
 -- deleteContext
+
+
+
+
+- Para seguir con el proyecto, basarse en las siguientes interfaces:
+-- Interface Token
+-- Interface 
+-- Interace RuleNode
