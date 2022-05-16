@@ -65,6 +65,10 @@ bloque: LA instrucciones LC ;
 
 declaracion : tipoDato expresion PUNTOYCOMA ;
 
+// Cambiar regla declaracion: tipoDato ID listaDeclaracion PUNTOYCOMA ;
+
+// listaDeclaracion: ... ;
+
 expresion: ID expresion
          | COMA expresion
          | asignar expresion

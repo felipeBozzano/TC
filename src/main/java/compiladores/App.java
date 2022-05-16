@@ -10,8 +10,7 @@ public class App {
     public static void main(String[] args) throws Exception {
         System.out.println("Hello, Compilador!!!");
         // create a CharStream that reads from file
-        CharStream input = CharStreams.fromFileName("input/opal.txt");
-        // CharStream input = CharStreams.fromFileName("input/fechas.txt");
+        CharStream input = CharStreams.fromFileName("input/listener.txt");
 
         // create a lexer that feeds off of input CharStream
         compiladoresLexer lexer = new compiladoresLexer(input);
@@ -25,10 +24,10 @@ public class App {
         compiladoresParser parser = new compiladoresParser(tokens);
                 
         // create Listener
-        // ExpRegBaseListener escucha = new Escucha();
+        compiladoresBaseListener escucha = new miListener();
 
         // Conecto el objeto con Listeners al parser
-        // parser.addParseListener(escucha);
+        parser.addParseListener(escucha);
 
         // Solicito al parser que comience indicando una regla gramatical
         // En este caso la regla es el simbolo inicial

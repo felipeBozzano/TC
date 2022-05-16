@@ -1,0 +1,7 @@
+{
+    int primero = 0;
+    {
+        int segundo = 0;
+    }
+}
+{ }

@@ -34,5 +34,6 @@ dentro de otro y luego lo cerramos, ese contexto va a ser el último, por lo que
 
 - Para seguir con el proyecto, basarse en las siguientes interfaces:
 -- Interface Token
--- Interface 
+-- Interface ParseTree
 -- Interace RuleNode
+-- Interface TerminalNode
