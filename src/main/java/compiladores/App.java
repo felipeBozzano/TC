@@ -24,7 +24,7 @@ public class App {
         compiladoresParser parser = new compiladoresParser(tokens);
                 
         // create Listener
-        compiladoresBaseListener escucha = new miListener();
+        compiladoresBaseListener escucha = new miListener(parser);
 
         // Conecto el objeto con Listeners al parser
         parser.addParseListener(escucha);

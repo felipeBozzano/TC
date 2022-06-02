@@ -2,7 +2,7 @@ package tablaSimbolos;
 
 public abstract class ID {
     String id;
-    TipoDato tipo;
+    String tipo;
     Boolean inicializada;
     Boolean usada;
 }

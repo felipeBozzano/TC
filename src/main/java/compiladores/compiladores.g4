@@ -63,21 +63,28 @@ bloque: LA instrucciones LC ;
 
 /*-----------------------------      DECLARACIONES ASIGNACIONES      ----------------------------------*/
 
-declaracion : tipoDato expresion PUNTOYCOMA ;
+/* declaracion : tipoDato expresion PUNTOYCOMA ; */
 
-// Cambiar regla declaracion: tipoDato ID listaDeclaracion PUNTOYCOMA ;
+declaracion: tipoDato ID listaDeclaracion PUNTOYCOMA ;
 
-// listaDeclaracion: ... ;
+/*  int x;
+    double y;
+    int z = 0;
+    double w, q, t;
+    int a = 5, b, c = 10; */
 
-expresion: ID expresion
+listaDeclaracion: IGUAL (opal|invocacionFuncion) listaDeclaracion
+                | COMA ID listaDeclaracion
+                |
+                ;
+
+/* expresion: ID expresion
          | COMA expresion
          | asignar expresion
          |
-         ;
+         ; */
 
-asignacion: asignar PUNTOYCOMA ;
-
-asignar: ID IGUAL (opal|invocacionFuncion) ;
+asignacion: ID IGUAL (opal|invocacionFuncion) PUNTOYCOMA ;
 
 /*-----------------------------               FUNCIONES              ----------------------------------*/
 
@@ -115,7 +122,7 @@ iif: 'if' PA opal PC (bloque|inst_simple);
 
 ifor: 'for' PA condicionFor PC (bloque|inst_simple);
 
-condicionFor: (ID|asignar)? PUNTOYCOMA opal PUNTOYCOMA asignar?;
+condicionFor: (ID|asignacion) PUNTOYCOMA opal PUNTOYCOMA asignacion;
 
 /*-----------------------------                OPAL                  ----------------------------------*/
 

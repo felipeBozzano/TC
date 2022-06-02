@@ -5,24 +5,65 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.DeclaracionContext;
+import compiladores.compiladoresParser.ListaDeclaracionContext;
 import compiladores.compiladoresParser.SiContext;
 import tablaSimbolos.TablaSimbolos;
+import tablaSimbolos.Variable;
+import tablaSimbolos.ID;
 
 public class miListener extends compiladoresBaseListener {
+    private String[] nombres;
+    private Integer bloque = 1;
+    private Integer count = 0;
+    private TablaSimbolos tablaSimbolos = new TablaSimbolos();
+
+    miListener(compiladoresParser parser){
+        nombres = parser.getRuleNames();
+    }
+
     @Override
     public void enterDeclaracion(DeclaracionContext ctx) {
     }
 
     @Override
-    public void exitDeclaracion(DeclaracionContext ctx) {
-        for(int i = 0; i < ctx.getChildCount(); i++) {
-            System.out.println("HIJO " + i + ": " + ctx.getChild(i).getText());
-        }
+    public void exitListaDeclaracion(ListaDeclaracionContext ctx) {
     }
 
-    private Integer bloque = 1;
-    private Integer count = 0;
-    private TablaSimbolos tablaSimbolos = new TablaSimbolos();
+    @Override
+    public void enterListaDeclaracion(ListaDeclaracionContext ctx) {
+    }
+
+    @Override
+    public void exitDeclaracion(DeclaracionContext ctx) {
+        String tipoDato = ctx.tipoDato().getText();
+        String ID = ctx.ID().getText();
+        /* System.out.println( tipoDato + " " + ID); */
+        ListaDeclaracionContext lista = ctx.listaDeclaracion();
+
+        // PARA EL CASO DE int x; DONDE NO HAY listaDeclaracion
+        if(lista.getChildCount() == 0) {
+            Variable id = new Variable(ID, tipoDato, false);
+            tablaSimbolos.addID(id);
+        }
+
+        /* System.out.println("CANTIDAD DE HIJOS" + lista.getChildCount()); */
+
+        while (lista.getChildCount() != 0){
+            if (lista.getChild(0).getText() == "=") {
+                Variable id = new Variable(ID, tipoDato, true);
+                tablaSimbolos.addID(id);
+            }
+            if (lista.getChild(0).getText() == ",") {
+                Variable id = new Variable(ID, tipoDato, false);
+                tablaSimbolos.addID(id);
+                ID = ctx.ID().getText();
+            }
+            lista = lista.listaDeclaracion();
+            /* System.out.println("CANTIDAD DE HIJOS" + lista.getChildCount()); */
+        }
+
+        //if (nombres[ctx.getRuleIndex()] == "declaracion");
+    }
 
     @Override
     public void enterBloque(BloqueContext ctx) {
@@ -33,8 +74,16 @@ public class miListener extends compiladoresBaseListener {
 
     @Override
     public void exitBloque(BloqueContext ctx) {
-        System.out.println("TEXTO AL SALIR DEL BLOQUE: " + ctx.getText());
-        System.out.println("CANTIDAD DE CONTEXTOS: " + tablaSimbolos.getSimbolos().size());
+        /* System.out.println("TEXTO AL SALIR DEL BLOQUE: " + ctx.getText());
+        System.out.println("CANTIDAD DE CONTEXTOS: " + tablaSimbolos.getSimbolos().size()); */
+        /* for (String name: tablaSimbolos.getSimbolos().get(0).keySet()) {
+            String key = name.toString();
+            String value = tablaSimbolos.getSimbolos().get(0).toString();
+            System.out.println(key + " " + value);
+        } */
+        for (var entry : tablaSimbolos.getSimbolos().get(1).entrySet()) {
+            System.out.println(entry.getKey() + "/" + entry.getValue());
+        }
         tablaSimbolos.deleteContext();
     }
 
@@ -45,6 +94,7 @@ public class miListener extends compiladoresBaseListener {
 
     @Override
     public void enterSi(SiContext ctx) {
+        System.out.println("");
         System.out.println("INICIO DEL PARSEO");
     }
 

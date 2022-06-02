@@ -1,7 +1,7 @@
 {
-    int primero = 0;
-    {
-        int segundo = 0;
-    }
+int x;
+double y;
+int z = 0;
+double w, q, t;
+int a = 5, b, c = 10;
 }
-{ }
