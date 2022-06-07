@@ -9,7 +9,33 @@ import compiladores.compiladoresParser.ListaDeclaracionContext;
 import compiladores.compiladoresParser.SiContext;
 import tablaSimbolos.TablaSimbolos;
 import tablaSimbolos.Variable;
-import tablaSimbolos.ID;
+
+/* 
+ * 05/06/2021
+ * TENIAMOS QUE CAMBIAR DE ESTO
+ * 
+ * if (lista.getChild(0).getText() == "=")) {
+ * A ESTO
+ * if (lista.getChild(0).getText().equals("=")) {
+ * 
+ * Había un problemas, cuando inicializamos una variable con una asignacion "int x = 0"
+ * y despues seguimos con una definicion "int x = 0, k"
+ * lo que pasaba es que se volvía a agregar la variable x pero con inicializacion = false
+ * por eso agregamos if(!lista.getParent().getChild(0).getText().equals("=")) {
+ * Si usamos el ejemplo anterior y vamos desglosando las reglas:
+ * Paso 1: int x listaDeclaracion -- tipo = int, id = x
+ * Paso 2: = 0 listaDeclaracion -- Como el primer hijo es "=", guardamos la variable x inicializada a la tabla de simbolos
+ * Paso 3: , k listaDeclaracion -- ANTES DEL CAMBIO -- Como el primer hijo es ",", guardamos la variable x no inicializada a la tabla de simbolos
+ *                              -- DESPUES DEL CAMBIO -- Como el primer hijo del padre es "=", no se guarda nada
+ * 
+ * Había un problema, si la declaración es de varias variables "int x, y", la última no se guardaba
+ * por eso se agrega if(lista.listaDeclaracion().getChildCount() == 0) {
+ * Si usamos el ejemplo anterior y vamos desglosando las reglas:
+ * Paso 1: int x listaDeclaracion -- Tipo = int, id = x
+ * Paso 2: , y listaDeclaracion -- ANTES DEL CAMBIO -- guardamos la variable x no inicializada a la tabla de simbolos
+ *                              -- DESPUES DEL CAMBIO -- Como el primer hijo es ",", guardamos la variable x no inicializada a la tabla de simbolos
+ *                                                    -- Como no tiene hijos, guardamos la variable y no inicializada a la tabla de simbolos
+ */
 
 public class miListener extends compiladoresBaseListener {
     private String[] nombres;
@@ -37,52 +63,47 @@ public class miListener extends compiladoresBaseListener {
     public void exitDeclaracion(DeclaracionContext ctx) {
         String tipoDato = ctx.tipoDato().getText();
         String ID = ctx.ID().getText();
-        /* System.out.println( tipoDato + " " + ID); */
         ListaDeclaracionContext lista = ctx.listaDeclaracion();
 
-        // PARA EL CASO DE int x; DONDE NO HAY listaDeclaracion
+        // Para el caso de int x donde no hay listaDeclaracion
         if(lista.getChildCount() == 0) {
             Variable id = new Variable(ID, tipoDato, false);
             tablaSimbolos.addID(id);
         }
 
-        /* System.out.println("CANTIDAD DE HIJOS" + lista.getChildCount()); */
-
+        // Para una declaracion de varias variables
         while (lista.getChildCount() != 0){
-            if (lista.getChild(0).getText() == "=") {
+            if (lista.getChild(0).getText().equals("=")) {
                 Variable id = new Variable(ID, tipoDato, true);
                 tablaSimbolos.addID(id);
             }
-            if (lista.getChild(0).getText() == ",") {
-                Variable id = new Variable(ID, tipoDato, false);
-                tablaSimbolos.addID(id);
-                ID = ctx.ID().getText();
+            if (lista.getChild(0).getText().equals(",")) {
+                if(!lista.getParent().getChild(0).getText().equals("=")) {
+                    Variable id = new Variable(ID, tipoDato, false);
+                    tablaSimbolos.addID(id);
+                }
+                ID = lista.ID().getText();
+                if(lista.listaDeclaracion().getChildCount() == 0) {
+                    Variable ultimoId = new Variable(ID, tipoDato, false);
+                    tablaSimbolos.addID(ultimoId);
+                }
             }
             lista = lista.listaDeclaracion();
-            /* System.out.println("CANTIDAD DE HIJOS" + lista.getChildCount()); */
         }
-
         //if (nombres[ctx.getRuleIndex()] == "declaracion");
     }
 
     @Override
     public void enterBloque(BloqueContext ctx) {
-        /* System.out.println("TEXTO: AL ENTRAR AL BLOQUE " + ctx.getText()); */
         bloque++;
         tablaSimbolos.addContext();
     }
 
     @Override
     public void exitBloque(BloqueContext ctx) {
-        /* System.out.println("TEXTO AL SALIR DEL BLOQUE: " + ctx.getText());
-        System.out.println("CANTIDAD DE CONTEXTOS: " + tablaSimbolos.getSimbolos().size()); */
-        /* for (String name: tablaSimbolos.getSimbolos().get(0).keySet()) {
-            String key = name.toString();
-            String value = tablaSimbolos.getSimbolos().get(0).toString();
-            System.out.println(key + " " + value);
-        } */
-        for (var entry : tablaSimbolos.getSimbolos().get(1).entrySet()) {
-            System.out.println(entry.getKey() + "/" + entry.getValue());
+        int posicionUltimoContexto = tablaSimbolos.getSimbolos().size()-1;
+        for (var entry : tablaSimbolos.getSimbolos().get(posicionUltimoContexto).entrySet()) {
+            System.out.println(entry.getKey() + " --- " + entry.getValue());
         }
         tablaSimbolos.deleteContext();
     }
@@ -105,8 +126,13 @@ public class miListener extends compiladoresBaseListener {
 
     @Override
     public void exitSi(SiContext ctx) {
+        int posicionUltimoContexto = tablaSimbolos.getSimbolos().size()-1;
+        for (var entry : tablaSimbolos.getSimbolos().get(posicionUltimoContexto).entrySet()) {
+            System.out.println(entry.getKey() + " --- " + entry.getValue());
+        }
+        tablaSimbolos.deleteContext();
         System.out.println("FIN DEL PARSEO");
-        System.out.println("Visitamos " + bloque + " bloques");
+        System.out.println("Visitamos " + bloque + " contextos");
         System.out.println("Visitamos " + count + " nodos");
         System.out.println("CANTIDAD DE CONTEXTOS: " + tablaSimbolos.getSimbolos().size());
     }
