@@ -73,7 +73,7 @@ declaracion: tipoDato ID listaDeclaracion PUNTOYCOMA ;
     double w, q, t;
     int a = 5, b, c = 10; */
 
-listaDeclaracion: IGUAL (opal|invocacionFuncion) listaDeclaracion
+listaDeclaracion: IGUAL opal listaDeclaracion
                 | COMA ID listaDeclaracion
                 |
                 ;
@@ -101,7 +101,11 @@ param: tipoDato ID?;
 
 invocacionFuncion: ID PA listaArgs PC;
 
-listaArgs: ((ID|ENTERO|invocacionFuncion) COMA)* (ID|ENTERO|invocacionFuncion);
+/* listaArgs: ((ID|ENTERO|invocacionFuncion) COMA)* (ID|ENTERO|invocacionFuncion); */
+
+listaArgs: (ID|ENTERO|invocacionFuncion) COMA? listaArgs
+         |
+         ;
 
 definicionFuncion: tipoDato ID PA listaParamsObligatorios PC bloque;
 
@@ -130,7 +134,9 @@ opal : term or;
 
 term : factor t;
 
-factor : (ENTERO|ID)
+factor : ENTERO
+       | ID
+       | invocacionFuncion
        | PA opal PC
        |
        ;

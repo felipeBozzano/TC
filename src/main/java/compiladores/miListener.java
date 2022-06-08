@@ -7,6 +7,7 @@ import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.DeclaracionContext;
 import compiladores.compiladoresParser.FactorContext;
+import compiladores.compiladoresParser.InvocacionFuncionContext;
 import compiladores.compiladoresParser.ListaDeclaracionContext;
 import compiladores.compiladoresParser.SiContext;
 import tablaSimbolos.ID;
@@ -89,11 +90,6 @@ public class miListener extends compiladoresBaseListener {
         if(this.tablaSimbolos.searchID(ctx.ID().getText()) == null){
             System.out.println("La variable " + ctx.ID() + " no está inicializada!");
         }
-        /* 
-            -- Cuando le estamos cambiando el valor a una variable,
-            la estamos usando ??? ----->  int x; x = 1;
-            -- Cuando una variable es parte de un opal() la estamos usando?
-        */
     }
 
     @Override
@@ -103,7 +99,17 @@ public class miListener extends compiladoresBaseListener {
         }
         ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
         if(temp == null){
-            System.out.println("La variable " + ctx.ID() + " no está inicializada!");
+            System.out.println("La variable " + ctx.ID() + " no está declarada!");
+        }else{
+            temp.setUsada(true);
+        }
+    }
+
+    @Override
+    public void exitInvocacionFuncion(InvocacionFuncionContext ctx) {
+        ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
+        if(temp == null){
+            System.out.println("La función " + ctx.ID() + " no está declarada!");
         }else{
             temp.setUsada(true);
         }

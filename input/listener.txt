@@ -1,4 +1,8 @@
 {
     int y;
     int x = y + 1;
+    {
+        double j = 1;
+    }
+    j ++;
 }
