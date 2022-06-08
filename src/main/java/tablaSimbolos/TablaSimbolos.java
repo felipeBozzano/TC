@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class TablaSimbolos {
-    List< Map<String,ID> > simbolos;
+    LinkedList< Map<String,ID> > simbolos;
 
     public TablaSimbolos() {
         this.simbolos = new LinkedList<Map<String,ID>>();
@@ -17,7 +18,7 @@ public class TablaSimbolos {
         return simbolos;
     }
 
-    public void setSimbolos(List<Map<String, ID>> simbolos) {
+    public void setSimbolos(LinkedList<Map<String, ID>> simbolos) {
         this.simbolos = simbolos;
     }
 
@@ -25,12 +26,20 @@ public class TablaSimbolos {
         this.simbolos.get(this.simbolos.size()-1).put(id.id, id);
     };
 
-    public ID searchLocalID (String id) {
-        return new Variable(id, "int", true);
+    public ID searchLocalID (String id, Map<String, ID> map) {
+        return map.get(id);
     };
 
     public ID searchID (String id){
-        return new Variable(id, "double", true);
+        Iterator<Map<String, ID>> iterator = this.simbolos.descendingIterator();
+        while (iterator.hasNext()) 
+        {
+            Map<String, ID> temp = iterator.next();
+            if(this.searchLocalID(id, temp) != null){
+                return this.searchLocalID(id, temp);
+            }
+        }
+        return null;
     };
 
     public void addContext (){

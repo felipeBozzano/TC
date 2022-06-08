@@ -3,10 +3,13 @@ package compiladores;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.DeclaracionContext;
+import compiladores.compiladoresParser.FactorContext;
 import compiladores.compiladoresParser.ListaDeclaracionContext;
 import compiladores.compiladoresParser.SiContext;
+import tablaSimbolos.ID;
 import tablaSimbolos.TablaSimbolos;
 import tablaSimbolos.Variable;
 
@@ -48,18 +51,6 @@ public class miListener extends compiladoresBaseListener {
     }
 
     @Override
-    public void enterDeclaracion(DeclaracionContext ctx) {
-    }
-
-    @Override
-    public void exitListaDeclaracion(ListaDeclaracionContext ctx) {
-    }
-
-    @Override
-    public void enterListaDeclaracion(ListaDeclaracionContext ctx) {
-    }
-
-    @Override
     public void exitDeclaracion(DeclaracionContext ctx) {
         String tipoDato = ctx.tipoDato().getText();
         String ID = ctx.ID().getText();
@@ -91,6 +82,31 @@ public class miListener extends compiladoresBaseListener {
             lista = lista.listaDeclaracion();
         }
         //if (nombres[ctx.getRuleIndex()] == "declaracion");
+    }
+
+    @Override
+    public void exitAsignacion(AsignacionContext ctx) {
+        if(this.tablaSimbolos.searchID(ctx.ID().getText()) == null){
+            System.out.println("La variable " + ctx.ID() + " no está inicializada!");
+        }
+        /* 
+            -- Cuando le estamos cambiando el valor a una variable,
+            la estamos usando ??? ----->  int x; x = 1;
+            -- Cuando una variable es parte de un opal() la estamos usando?
+        */
+    }
+
+    @Override
+    public void exitFactor(FactorContext ctx) {
+        if(ctx.ID() == null){
+            return;
+        }
+        ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
+        if(temp == null){
+            System.out.println("La variable " + ctx.ID() + " no está inicializada!");
+        }else{
+            temp.setUsada(true);
+        }
     }
 
     @Override

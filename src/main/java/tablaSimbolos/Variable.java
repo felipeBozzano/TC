@@ -11,11 +11,6 @@ public class Variable extends ID {
 
     @Override
     public String toString() {
-        return this.tipo + " " + this.id + " inicializada: " + this.getInicializada() + " usada: " + this.usada ;
+        return this.tipo + " " + this.id + " inicializada: " + this.inicializada + " usada: " + this.usada ;
     }
-
-    public String getInicializada() {
-        return this.inicializada == true ? "true" : "false";
-    }
-    
 }
