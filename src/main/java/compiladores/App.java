@@ -10,7 +10,7 @@ public class App {
     public static void main(String[] args) throws Exception {
         System.out.println("Hello, Compilador!!!");
         // create a CharStream that reads from file
-        CharStream input = CharStreams.fromFileName("input/listener.txt");
+        CharStream input = CharStreams.fromFileName("input/visitor.txt");
 
         // create a lexer that feeds off of input CharStream
         compiladoresLexer lexer = new compiladoresLexer(input);
@@ -31,11 +31,11 @@ public class App {
 
         // Solicito al parser que comience indicando una regla gramatical
         // En este caso la regla es el simbolo inicial
-        parser.si();
-        // ParseTree tree =  parser.s();
+        // parser.si();
+        ParseTree tree =  parser.si();
         // Conectamos el visitor
-        // Caminante visitor = new Caminante();
-        // visitor.visit(tree);
+        miVisitor visitor = new miVisitor();
+        visitor.visit(tree);
         // System.out.println(visitor);
         // System.out.println(visitor.getErrorNodes());
         // Imprime el arbol obtenido
