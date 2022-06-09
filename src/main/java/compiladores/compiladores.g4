@@ -88,30 +88,29 @@ asignacion: ID IGUAL (opal|invocacionFuncion) PUNTOYCOMA ;
 
 /*-----------------------------               FUNCIONES              ----------------------------------*/
 
-funcion: declaracionFuncion PUNTOYCOMA
+funcion: declaracionFuncion
        | invocacionFuncion PUNTOYCOMA
-       | definicionFuncion
        ;
 
-declaracionFuncion: tipoDato ID PA listaParams PC;
+declaracionFuncion: tipoDato ID PA param PC;
 
-listaParams: (param COMA)* param;
+param: tipoDato ID listaParams
+     |
+     ;
 
-param: tipoDato ID?;
+listaParams: COMA param listaParams
+           |
+           ;
 
-invocacionFuncion: ID PA listaArgs PC;
+invocacionFuncion: ID PA args PC;
 
-/* listaArgs: ((ID|ENTERO|invocacionFuncion) COMA)* (ID|ENTERO|invocacionFuncion); */
+args: opal listaArgs
+    | 
+    ;
 
-listaArgs: (ID|ENTERO|invocacionFuncion) COMA? listaArgs
+listaArgs: COMA opal listaArgs
          |
          ;
-
-definicionFuncion: tipoDato ID PA listaParamsObligatorios PC bloque;
-
-listaParamsObligatorios: (paramObligatorio COMA)* paramObligatorio;
-
-paramObligatorio: tipoDato ID;
 
 /*-----------------------------           WHILE, IF, FOR             ----------------------------------*/
 

@@ -1,5 +1,7 @@
 package compiladores;
 
+import java.util.ArrayList;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -7,8 +9,8 @@ import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.DeclaracionContext;
 import compiladores.compiladoresParser.FactorContext;
-import compiladores.compiladoresParser.InvocacionFuncionContext;
 import compiladores.compiladoresParser.ListaDeclaracionContext;
+import compiladores.compiladoresParser.ParamContext;
 import compiladores.compiladoresParser.SiContext;
 import tablaSimbolos.ID;
 import tablaSimbolos.TablaSimbolos;
@@ -46,6 +48,7 @@ public class miListener extends compiladoresBaseListener {
     private Integer bloque = 1;
     private Integer count = 0;
     private TablaSimbolos tablaSimbolos = new TablaSimbolos();
+    private ArrayList<ID> paramsFuncion = new ArrayList<ID>(); 
 
     miListener(compiladoresParser parser){
         nombres = parser.getRuleNames();
@@ -99,19 +102,17 @@ public class miListener extends compiladoresBaseListener {
         }
         ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
         if(temp == null){
-            System.out.println("La variable " + ctx.ID() + " no está declarada!");
+            System.out.println("el ID " + ctx.ID() + " no está declarada!");
         }else{
             temp.setUsada(true);
         }
     }
 
     @Override
-    public void exitInvocacionFuncion(InvocacionFuncionContext ctx) {
-        ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
-        if(temp == null){
-            System.out.println("La función " + ctx.ID() + " no está declarada!");
-        }else{
-            temp.setUsada(true);
+    public void exitParam(ParamContext ctx) {
+        if(ctx.getChildCount() != 0){
+            Variable id = new Variable(ctx.ID().getText(), ctx.tipoDato().getText(), true);
+            this.paramsFuncion.add(id);
         }
     }
 
@@ -119,6 +120,11 @@ public class miListener extends compiladoresBaseListener {
     public void enterBloque(BloqueContext ctx) {
         bloque++;
         tablaSimbolos.addContext();
+        if(paramsFuncion.size() > 0){
+            for (ID id : paramsFuncion) {
+                tablaSimbolos.addID(id);
+            }
+        }
     }
 
     @Override
