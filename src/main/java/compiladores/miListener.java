@@ -1,15 +1,11 @@
 package compiladores;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import com.ibm.icu.text.PluralRules.IFixedDecimal;
-
-import compiladores.compiladoresParser.ArgsContext;
 import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.CondicionForContext;
@@ -17,9 +13,7 @@ import compiladores.compiladoresParser.DeclaracionContext;
 import compiladores.compiladoresParser.DeclaracionFuncionContext;
 import compiladores.compiladoresParser.FactorContext;
 import compiladores.compiladoresParser.InvocacionFuncionContext;
-import compiladores.compiladoresParser.ListaArgsContext;
 import compiladores.compiladoresParser.ListaDeclaracionContext;
-import compiladores.compiladoresParser.OpalContext;
 import compiladores.compiladoresParser.ParamContext;
 import compiladores.compiladoresParser.SiContext;
 import tablaSimbolos.Funcion;
