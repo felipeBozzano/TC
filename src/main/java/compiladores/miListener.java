@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
@@ -36,7 +35,7 @@ public class miListener extends compiladoresBaseListener {
     @Override
     public void exitDeclaracion(DeclaracionContext ctx) {
         if(this.tablaSimbolos.searchID(ctx.ID().getText()) != null){
-            System.out.println("ERROR SEMANTICO: Doble declaración del mismo identificador -- ID: " + ctx.ID());
+            System.out.println("\t\tERROR SEMANTICO: Doble declaración del mismo identificador -- ID: " + ctx.ID());
             return;
         }
 
@@ -76,7 +75,7 @@ public class miListener extends compiladoresBaseListener {
     public void exitAsignacion(AsignacionContext ctx) {
         ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
         if(temp == null){
-            System.out.println("ERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
+            System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
             return;
         }
         temp.setInicializada(true);
@@ -85,7 +84,7 @@ public class miListener extends compiladoresBaseListener {
     @Override
     public void exitDeclaracionFuncion(DeclaracionFuncionContext ctx) {
         if(this.tablaSimbolos.searchID(ctx.ID().getText()) != null){
-            System.out.println("ERROR SEMANTICO: Doble declaración del mismo identificador -- ID: " + ctx.ID());
+            System.out.println("\t\tERROR SEMANTICO: Doble declaración del mismo identificador -- ID: " + ctx.ID());
             return;
         }
 
@@ -108,7 +107,7 @@ public class miListener extends compiladoresBaseListener {
     public void exitInvocacionFuncion(InvocacionFuncionContext ctx) {
         ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
         if(temp == null){
-            System.out.println("ERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
+            System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
         }else{
             temp.setUsada(true);
         }
@@ -121,12 +120,12 @@ public class miListener extends compiladoresBaseListener {
         }
         ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
         if(temp == null) {
-            System.out.println("ERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
+            System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
             return;
         }
         else {
             if(!temp.getInicializada()) {
-                System.out.println("ERROR SEMANTICO: Uso de un identificador no inicializado -- ID: " + ctx.ID());
+                System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no inicializado -- ID: " + ctx.ID());
                 return;
             }
             temp.setUsada(true);
@@ -146,11 +145,11 @@ public class miListener extends compiladoresBaseListener {
         if (ctx.ID() != null) {
             ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
             if(temp == null) {
-                System.out.println("ERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
+                System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
                 return;
             }
             if(!temp.getInicializada()) {
-                System.out.println("ERROR SEMANTICO: Uso de un identificador no inicializado -- ID: " + ctx.ID());
+                System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no inicializado -- ID: " + ctx.ID());
                 return;
             }
             temp.setUsada(true);
@@ -160,7 +159,7 @@ public class miListener extends compiladoresBaseListener {
     @Override
     public void enterBloque(BloqueContext ctx) {
         bloque++;
-        System.out.println("INICIO DEL CONTEXTO");
+        System.out.println("\t\tINICIO DEL CONTEXTO");
         tablaSimbolos.addContext();
         if(paramsFuncion.size() > 0){
             for (ID id : paramsFuncion) {
@@ -175,12 +174,12 @@ public class miListener extends compiladoresBaseListener {
         int posicionUltimoContexto = tablaSimbolos.getSimbolos().size()-1;
         for (var entry : tablaSimbolos.getSimbolos().get(posicionUltimoContexto).entrySet()) {
             if(!entry.getValue().getUsada()) {
-                System.out.println("ERROR SEMANTICO: Identificador declarado pero no usado");
+                System.out.println("\t\tERROR SEMANTICO: Identificador declarado pero no usado");
                 System.out.print("\t");
             }
-            System.out.println(entry.getKey() + " --- " + entry.getValue());
+            System.out.println("\t\t" + entry.getKey() + " --- " + entry.getValue());
         }
-        System.out.println("FIN DEL CONTEXTO");
+        System.out.println("\t\tFIN DEL CONTEXTO");
         tablaSimbolos.deleteContext();
     }
 
@@ -193,7 +192,7 @@ public class miListener extends compiladoresBaseListener {
     public void enterSi(SiContext ctx) {
         System.out.println("");
         System.out.println("INICIO DEL PARSEO");
-        System.out.println("INICIO DEL CONTEXTO");
+        System.out.println("\tINICIO DEL CONTEXTO GENERAL");
     }
 
     @Override
@@ -201,17 +200,16 @@ public class miListener extends compiladoresBaseListener {
         int posicionUltimoContexto = tablaSimbolos.getSimbolos().size()-1;
         for (var entry : tablaSimbolos.getSimbolos().get(posicionUltimoContexto).entrySet()) {
             if(!entry.getValue().getUsada()) {
-                System.out.println("ERROR SEMANTICO: Identificador declarado pero no usado");
+                System.out.println("\t\tERROR SEMANTICO: Identificador declarado pero no usado");
                 System.out.print("\t");
             }
-            System.out.println(entry.getKey() + " --- " + entry.getValue());
+            System.out.println("\t\t" + entry.getKey() + " --- " + entry.getValue());
         }
         tablaSimbolos.deleteContext();
-        System.out.println("FIN DEL CONTEXTO");
+        System.out.println("\tFIN DEL CONTEXTO GENERAL");
         System.out.println("FIN DEL PARSEO");
         System.out.println("Visitamos " + bloque + " contextos");
         System.out.println("Visitamos " + count + " nodos");
-        System.out.println("CANTIDAD DE CONTEXTOS: " + tablaSimbolos.getSimbolos().size());
     }
     
 }

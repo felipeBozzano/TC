@@ -7,7 +7,12 @@ int funcion2(double a, int c, int d){
 int main(double a, int b, int c){
   if(a<b){
     int hola=1;
-    hola = a + b;
+    a = hola + b;
   }
   funcion2(a, b, c);
 }
+
+double q = 3;
+int u = 7;
+int o = 9;
+main(q, u, o);
