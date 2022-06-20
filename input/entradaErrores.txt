@@ -1,0 +1,12 @@
+int funcion2(double a, int c, int d){
+  a = c + d;
+  d = a;
+  c = a;
+}
+
+int main(double a, int b, int c){
+  if(a<b){
+    int hola;
+  }
+  funcion2(a, b, c);
+}
