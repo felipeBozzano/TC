@@ -12,4 +12,9 @@ public class Funcion extends ID {
         super.inicializada = inicializado == ';';
         super.usada = false;
     }
+
+    @Override
+    public String toString() {
+        return this.tipo + " " + this.id + " inicializada: " + this.inicializada + " usada: " + this.usada + " tipos args: " + this.args;
+    }
 }

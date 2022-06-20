@@ -1,19 +1,31 @@
 package compiladores;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import com.ibm.icu.text.PluralRules.IFixedDecimal;
+
+import compiladores.compiladoresParser.ArgsContext;
 import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
+import compiladores.compiladoresParser.CondicionForContext;
 import compiladores.compiladoresParser.DeclaracionContext;
+import compiladores.compiladoresParser.DeclaracionFuncionContext;
 import compiladores.compiladoresParser.FactorContext;
+import compiladores.compiladoresParser.InvocacionFuncionContext;
+import compiladores.compiladoresParser.ListaArgsContext;
 import compiladores.compiladoresParser.ListaDeclaracionContext;
+import compiladores.compiladoresParser.OpalContext;
 import compiladores.compiladoresParser.ParamContext;
 import compiladores.compiladoresParser.SiContext;
+import tablaSimbolos.Funcion;
 import tablaSimbolos.ID;
 import tablaSimbolos.TablaSimbolos;
+import tablaSimbolos.TipoDato;
 import tablaSimbolos.Variable;
 
 /* 
@@ -48,7 +60,7 @@ public class miListener extends compiladoresBaseListener {
     private Integer bloque = 1;
     private Integer count = 0;
     private TablaSimbolos tablaSimbolos = new TablaSimbolos();
-    private ArrayList<ID> paramsFuncion = new ArrayList<ID>(); 
+    private LinkedList<ID> paramsFuncion = new LinkedList<ID>();
 
     miListener(compiladoresParser parser){
         nombres = parser.getRuleNames();
@@ -56,8 +68,14 @@ public class miListener extends compiladoresBaseListener {
 
     @Override
     public void exitDeclaracion(DeclaracionContext ctx) {
+        if(this.tablaSimbolos.searchID(ctx.ID().getText()) != null){
+            System.out.println("ERROR SEMANTICO: Doble declaración del mismo identificador -- ID: " + ctx.ID());
+            return;
+        }
+
         String tipoDato = ctx.tipoDato().getText();
         String ID = ctx.ID().getText();
+
         ListaDeclaracionContext lista = ctx.listaDeclaracion();
 
         // Para el caso de int x donde no hay listaDeclaracion
@@ -67,7 +85,7 @@ public class miListener extends compiladoresBaseListener {
         }
 
         // Para una declaracion de varias variables
-        while (lista.getChildCount() != 0){
+        while (lista.getChildCount() != 0) {
             if (lista.getChild(0).getText().equals("=")) {
                 Variable id = new Variable(ID, tipoDato, true);
                 tablaSimbolos.addID(id);
@@ -90,8 +108,43 @@ public class miListener extends compiladoresBaseListener {
 
     @Override
     public void exitAsignacion(AsignacionContext ctx) {
-        if(this.tablaSimbolos.searchID(ctx.ID().getText()) == null){
-            System.out.println("La variable " + ctx.ID() + " no está inicializada!");
+        ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
+        if(temp == null){
+            System.out.println("ERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
+            return;
+        }
+        temp.setInicializada(true);
+    }
+  
+    @Override
+    public void exitDeclaracionFuncion(DeclaracionFuncionContext ctx) {
+        if(this.tablaSimbolos.searchID(ctx.ID().getText()) != null){
+            System.out.println("ERROR SEMANTICO: Doble declaración del mismo identificador -- ID: " + ctx.ID());
+            return;
+        }
+
+        LinkedList<TipoDato> list = new LinkedList<>();
+        // RECORREMOS LA LISTA AL REVES, PORQUE EN exitParam LA PRIMER VARIABLE QUE INGRESA
+        // A LA LISTA paramsFuncion ES LA ULTIMA DE LA LISTA DE PARAMETROS DE LA FUNCION
+        Iterator<ID> iterator = paramsFuncion.descendingIterator();
+        if(paramsFuncion.size() > 0){
+            while (iterator.hasNext())
+            {
+                TipoDato tipoDato = new TipoDato(iterator.next().getTipo());
+                list.add(tipoDato);
+            }
+        }
+        Funcion funcion = new Funcion(list, ctx.ID().getText(), ctx.tipoDato().getText(), '{');
+        tablaSimbolos.addID(funcion);
+    }
+
+    @Override
+    public void exitInvocacionFuncion(InvocacionFuncionContext ctx) {
+        ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
+        if(temp == null){
+            System.out.println("ERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
+        }else{
+            temp.setUsada(true);
         }
     }
 
@@ -101,9 +154,15 @@ public class miListener extends compiladoresBaseListener {
             return;
         }
         ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
-        if(temp == null){
-            System.out.println("el ID " + ctx.ID() + " no está declarada!");
-        }else{
+        if(temp == null) {
+            System.out.println("ERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
+            return;
+        }
+        else {
+            if(!temp.getInicializada()) {
+                System.out.println("ERROR SEMANTICO: Uso de un identificador no inicializado -- ID: " + ctx.ID());
+                return;
+            }
             temp.setUsada(true);
         }
     }
@@ -113,6 +172,22 @@ public class miListener extends compiladoresBaseListener {
         if(ctx.getChildCount() != 0){
             Variable id = new Variable(ctx.ID().getText(), ctx.tipoDato().getText(), true);
             this.paramsFuncion.add(id);
+        }
+    }
+    
+    @Override
+    public void exitCondicionFor(CondicionForContext ctx) {
+        if (ctx.ID() != null) {
+            ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
+            if(temp == null) {
+                System.out.println("ERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
+                return;
+            }
+            if(!temp.getInicializada()) {
+                System.out.println("ERROR SEMANTICO: Uso de un identificador no inicializado -- ID: " + ctx.ID());
+                return;
+            }
+            temp.setUsada(true);
         }
     }
 
@@ -125,12 +200,17 @@ public class miListener extends compiladoresBaseListener {
                 tablaSimbolos.addID(id);
             }
         }
+        paramsFuncion.clear();
     }
 
     @Override
     public void exitBloque(BloqueContext ctx) {
         int posicionUltimoContexto = tablaSimbolos.getSimbolos().size()-1;
         for (var entry : tablaSimbolos.getSimbolos().get(posicionUltimoContexto).entrySet()) {
+            if(!entry.getValue().getUsada()) {
+                System.out.println("ERROR SEMANTICO: Identificador declarado pero no usado");
+                System.out.print("\t");
+            }
             System.out.println(entry.getKey() + " --- " + entry.getValue());
         }
         tablaSimbolos.deleteContext();
@@ -156,6 +236,10 @@ public class miListener extends compiladoresBaseListener {
     public void exitSi(SiContext ctx) {
         int posicionUltimoContexto = tablaSimbolos.getSimbolos().size()-1;
         for (var entry : tablaSimbolos.getSimbolos().get(posicionUltimoContexto).entrySet()) {
+            if(!entry.getValue().getUsada()) {
+                System.out.println("ERROR SEMANTICO: Identificador declarado pero no usado");
+                System.out.print("\t");
+            }
             System.out.println(entry.getKey() + " --- " + entry.getValue());
         }
         tablaSimbolos.deleteContext();

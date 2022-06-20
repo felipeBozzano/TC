@@ -34,6 +34,4 @@ public abstract class ID {
     public void setUsada(Boolean usada) {
         this.usada = usada;
     }
-
-    
 }

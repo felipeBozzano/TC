@@ -1,8 +1,8 @@
 {
-    int y;
-    int x = y + 1;
-    {
-        double j = 1;
+    sumar (2,5);
+
+    int sumar (int x, double y) {
+        int z;
+        z = x + y + 1;
     }
-    j ++;
 }

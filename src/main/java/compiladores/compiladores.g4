@@ -56,35 +56,23 @@ instruccion: inst_simple
            ;
 
 inst_simple: declaracion
-           | asignacion
+           | asignar
            ;
 
 bloque: LA instrucciones LC ;
 
 /*-----------------------------      DECLARACIONES ASIGNACIONES      ----------------------------------*/
 
-/* declaracion : tipoDato expresion PUNTOYCOMA ; */
-
 declaracion: tipoDato ID listaDeclaracion PUNTOYCOMA ;
-
-/*  int x;
-    double y;
-    int z = 0;
-    double w, q, t;
-    int a = 5, b, c = 10; */
 
 listaDeclaracion: IGUAL opal listaDeclaracion
                 | COMA ID listaDeclaracion
                 |
                 ;
 
-/* expresion: ID expresion
-         | COMA expresion
-         | asignar expresion
-         |
-         ; */
+asignar : asignacion PUNTOYCOMA ;
 
-asignacion: ID IGUAL (opal|invocacionFuncion) PUNTOYCOMA ;
+asignacion: ID IGUAL (opal|invocacionFuncion) ;
 
 /*-----------------------------               FUNCIONES              ----------------------------------*/
 
@@ -98,14 +86,14 @@ param: tipoDato ID listaParams
      |
      ;
 
-listaParams: COMA param listaParams
+listaParams: COMA param
            |
            ;
 
 invocacionFuncion: ID PA args PC;
 
 args: opal listaArgs
-    | 
+    |
     ;
 
 listaArgs: COMA opal listaArgs
