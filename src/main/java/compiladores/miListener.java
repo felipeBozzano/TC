@@ -22,33 +22,6 @@ import tablaSimbolos.TablaSimbolos;
 import tablaSimbolos.TipoDato;
 import tablaSimbolos.Variable;
 
-/* 
- * 05/06/2021
- * TENIAMOS QUE CAMBIAR DE ESTO
- * 
- * if (lista.getChild(0).getText() == "=")) {
- * A ESTO
- * if (lista.getChild(0).getText().equals("=")) {
- * 
- * Había un problemas, cuando inicializamos una variable con una asignacion "int x = 0"
- * y despues seguimos con una definicion "int x = 0, k"
- * lo que pasaba es que se volvía a agregar la variable x pero con inicializacion = false
- * por eso agregamos if(!lista.getParent().getChild(0).getText().equals("=")) {
- * Si usamos el ejemplo anterior y vamos desglosando las reglas:
- * Paso 1: int x listaDeclaracion -- tipo = int, id = x
- * Paso 2: = 0 listaDeclaracion -- Como el primer hijo es "=", guardamos la variable x inicializada a la tabla de simbolos
- * Paso 3: , k listaDeclaracion -- ANTES DEL CAMBIO -- Como el primer hijo es ",", guardamos la variable x no inicializada a la tabla de simbolos
- *                              -- DESPUES DEL CAMBIO -- Como el primer hijo del padre es "=", no se guarda nada
- * 
- * Había un problema, si la declaración es de varias variables "int x, y", la última no se guardaba
- * por eso se agrega if(lista.listaDeclaracion().getChildCount() == 0) {
- * Si usamos el ejemplo anterior y vamos desglosando las reglas:
- * Paso 1: int x listaDeclaracion -- Tipo = int, id = x
- * Paso 2: , y listaDeclaracion -- ANTES DEL CAMBIO -- guardamos la variable x no inicializada a la tabla de simbolos
- *                              -- DESPUES DEL CAMBIO -- Como el primer hijo es ",", guardamos la variable x no inicializada a la tabla de simbolos
- *                                                    -- Como no tiene hijos, guardamos la variable y no inicializada a la tabla de simbolos
- */
-
 public class miListener extends compiladoresBaseListener {
     private String[] nombres;
     private Integer bloque = 1;
@@ -97,7 +70,6 @@ public class miListener extends compiladoresBaseListener {
             }
             lista = lista.listaDeclaracion();
         }
-        //if (nombres[ctx.getRuleIndex()] == "declaracion");
     }
 
     @Override
@@ -188,6 +160,7 @@ public class miListener extends compiladoresBaseListener {
     @Override
     public void enterBloque(BloqueContext ctx) {
         bloque++;
+        System.out.println("INICIO DEL CONTEXTO");
         tablaSimbolos.addContext();
         if(paramsFuncion.size() > 0){
             for (ID id : paramsFuncion) {
@@ -207,6 +180,7 @@ public class miListener extends compiladoresBaseListener {
             }
             System.out.println(entry.getKey() + " --- " + entry.getValue());
         }
+        System.out.println("FIN DEL CONTEXTO");
         tablaSimbolos.deleteContext();
     }
 
@@ -219,11 +193,7 @@ public class miListener extends compiladoresBaseListener {
     public void enterSi(SiContext ctx) {
         System.out.println("");
         System.out.println("INICIO DEL PARSEO");
-    }
-
-    @Override
-    public void visitTerminal(TerminalNode node) {
-        /* System.out.println("TEXTO DEL NODO: " + node.getSymbol().getText()); */
+        System.out.println("INICIO DEL CONTEXTO");
     }
 
     @Override
@@ -237,6 +207,7 @@ public class miListener extends compiladoresBaseListener {
             System.out.println(entry.getKey() + " --- " + entry.getValue());
         }
         tablaSimbolos.deleteContext();
+        System.out.println("FIN DEL CONTEXTO");
         System.out.println("FIN DEL PARSEO");
         System.out.println("Visitamos " + bloque + " contextos");
         System.out.println("Visitamos " + count + " nodos");

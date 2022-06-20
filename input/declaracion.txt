@@ -1,5 +1,0 @@
-int x;
-double y;
-int z = 0;
-double w, q, t;
-int a = 5, b, c = 10;
