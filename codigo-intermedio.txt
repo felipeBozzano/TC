@@ -1,0 +1,95 @@
+Código Intermedio --> Más facil implementarlo con el Visitor
+
+Independiente del lenguaje de entrada y del hardware
+
+--> Three Address Code (TAC) 
+
+Operación base es --> x = y op z (Hay hasta tres direcciones de memoria desde donde leemos datos: add ax, bx, cx)
+
+Ejemplos: 
+    
+    x = y + z --> tres direcciones
+    x = y + 7 --> dos direcciones
+    x = 2 --> una direcciones
+
+Armamos el código según necesidades sin usar mśa de 3 direcciones de memoria en cada instrucción.
+
+label l --> etiquetas
+jmp l --> saltos
+ifjmp cond, l --> condicionales
+push x
+y = pop x
+
+Generador de TAC
+    - Generador de variables temporales (t0, t1, t2, ...) --> las asignamos una única vez, luego se descartan.
+    - Generador de etiquetas (l0, l1, l2, ...)
+
+Funcionamientoo:
+
+----------------------
+int: x = b - y / a + 3
+out:
+    t0 = y / add
+    t1 = b - t0
+    t2 = t1 + 3
+    x = t2
+----------------------
+in: if(x<0)
+        y = z + 10;
+    else
+        y = z - 10;
+out:
+    t0 = x < 0
+    ifjmp t0, l0
+    y = z + 10;
+    jmp l1
+    label l0
+    y = z - 10;
+    label l1
+----------------------
+in: x = 0;
+    while(x < 10)
+        acc = acc + 1;
+        x = x + 1;
+out:
+    x = 0
+    label l0
+    t0 = x > 10
+    ifjmp t0, l1
+    acc = acc + 1
+    x = x + 1
+    jmp l0
+    label l1
+----------------------
+in: for(x = 0; x < 10; x = x + 1)
+        acc = acc + 1;
+out:
+   x = 0
+    label l0
+    t0 = x > 10
+    ifjmp t0, l1
+    acc = acc + 1
+    x = x + 1
+    jmp l0
+    label l1
+----------------------
+in: int f (int y, int z){
+        return y * z
+    }
+    ...
+    x = f(y,z);
+out:
+   label l0
+   t0 = pop
+   z = pop
+   y = pop
+   t1 = z * y
+   push t1
+   jmp t0
+
+   y = push
+   z = push
+   t0 = push
+   label l1
+----------------------
+
