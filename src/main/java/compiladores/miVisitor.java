@@ -45,7 +45,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     Integer indent;
     List<ErrorNode> errores;
     
-    public Caminante() {
+    public miVisitor() {
         errores = new ArrayList<>();
         initString();
     }
@@ -61,7 +61,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     }
         
     @Override
-    public String visitPrograma(SiContext ctx) {
+    public String visitSi(SiContext ctx) {
         // texto += " -<(prog) " + ctx.getText() + " | " + ctx.">- \n";
         // texto += " -<(prog) " + ctx.getStart() + " <-> " + ctx.getStop() + ">- \n";
         // texto += " -<(prog) {" + ctx.getStart().getText() + " <-> " +
