@@ -2,17 +2,15 @@ int funcion2(double a, int c, int d){
   a = c + d;
   d = a;
   c = a;
+  int a;
 }
 
 int main(double a, int b, int c){
   if(a<b){
-    int hola=1;
-    a = hola + b;
+    int hola;
+    h = 5;
   }
   funcion2(a, b, c);
+  int m;
+  int l = m;
 }
-
-double q = 3;
-int u = 7;
-int o = 9;
-main(q, u, o);
