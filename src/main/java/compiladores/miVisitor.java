@@ -35,10 +35,39 @@ import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.ErrorNode;
 
+import compiladores.compiladoresParser.AContext;
+import compiladores.compiladoresParser.AndContext;
+import compiladores.compiladoresParser.ArgsContext;
+import compiladores.compiladoresParser.AsignacionContext;
+import compiladores.compiladoresParser.AsignarContext;
+import compiladores.compiladoresParser.BloqueContext;
+import compiladores.compiladoresParser.BloqueDeControlContext;
+import compiladores.compiladoresParser.CContext;
+import compiladores.compiladoresParser.CompContext;
+import compiladores.compiladoresParser.ComparadorContext;
+import compiladores.compiladoresParser.CondicionForContext;
 import compiladores.compiladoresParser.DeclaracionContext;
+import compiladores.compiladoresParser.DeclaracionFuncionContext;
+import compiladores.compiladoresParser.ExpContext;
+import compiladores.compiladoresParser.FactorContext;
+import compiladores.compiladoresParser.FuncionContext;
+import compiladores.compiladoresParser.IforContext;
+import compiladores.compiladoresParser.IifContext;
+import compiladores.compiladoresParser.Inst_simpleContext;
 import compiladores.compiladoresParser.InstruccionContext;
 import compiladores.compiladoresParser.InstruccionesContext;
+import compiladores.compiladoresParser.InvocacionFuncionContext;
+import compiladores.compiladoresParser.IwhileContext;
+import compiladores.compiladoresParser.ListaArgsContext;
+import compiladores.compiladoresParser.ListaDeclaracionContext;
+import compiladores.compiladoresParser.ListaParamsContext;
+import compiladores.compiladoresParser.OContext;
+import compiladores.compiladoresParser.OpalContext;
+import compiladores.compiladoresParser.OrContext;
+import compiladores.compiladoresParser.ParamContext;
 import compiladores.compiladoresParser.SiContext;
+import compiladores.compiladoresParser.TContext;
+import compiladores.compiladoresParser.TermContext;
 
 public class miVisitor extends compiladoresBaseVisitor<String> {
     String texto;
@@ -59,7 +88,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visit(ParseTree tree) {
         return super.visit(tree);
     }
-        
+
     @Override
     public String visitSi(SiContext ctx) {
         // texto += " -<(prog) " + ctx.getText() + " | " + ctx.">- \n";
@@ -91,12 +120,215 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     }
     
     @Override
+    public String visitBloque(BloqueContext ctx) {
+        addTextoNodo(ctx, "bloque");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
     public String visitDeclaracion(DeclaracionContext ctx) {
         addTextoNodo(ctx, "declaracion");
         visitAllHijos(ctx);
         return texto;
     }
+
+    @Override
+    public String visitListaDeclaracion(ListaDeclaracionContext ctx) {
+        addTextoNodo(ctx, "listaDeclaracion");
+        visitAllHijos(ctx);
+        return texto;
+    }
     
+    @Override
+    public String visitAsignacion(AsignacionContext ctx) {
+        addTextoNodo(ctx, "visitAsignacion");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitAsignar(AsignarContext ctx) {
+        addTextoNodo(ctx, "visitAsignar");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitArgs(ArgsContext ctx) {
+        addTextoNodo(ctx, "visitAsignar");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitBloqueDeControl(BloqueDeControlContext ctx) {
+        addTextoNodo(ctx, "visitBloqueDeControl");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitComparador(ComparadorContext ctx) {
+        addTextoNodo(ctx, "visitComparador");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitCondicionFor(CondicionForContext ctx) {
+        addTextoNodo(ctx, "visitCondicionFor");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitDeclaracionFuncion(DeclaracionFuncionContext ctx) {
+        addTextoNodo(ctx, "visitDeclaracionFuncion");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitFuncion(FuncionContext ctx) {
+        addTextoNodo(ctx, "visitFuncion");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitIfor(IforContext ctx) {
+        addTextoNodo(ctx, "visitIfor");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitIif(IifContext ctx) {
+        addTextoNodo(ctx, "visitIif");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitInst_simple(Inst_simpleContext ctx) {
+        addTextoNodo(ctx, "visitInst_simple");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitInvocacionFuncion(InvocacionFuncionContext ctx) {
+        addTextoNodo(ctx, "visitInvocacionFuncion");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitIwhile(IwhileContext ctx) {
+        addTextoNodo(ctx, "visitIwhile");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitListaArgs(ListaArgsContext ctx) {
+        addTextoNodo(ctx, "visitListaArgs");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitListaParams(ListaParamsContext ctx) {
+        addTextoNodo(ctx, "visitListaParams");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitParam(ParamContext ctx) {
+        addTextoNodo(ctx, "visitParam");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitA(AContext ctx) {
+        addTextoNodo(ctx, "visitA");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitAnd(AndContext ctx) {
+        addTextoNodo(ctx, "visitAnd");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitC(CContext ctx) {
+        addTextoNodo(ctx, "visitC");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitComp(CompContext ctx) {
+        addTextoNodo(ctx, "visitComp");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitExp(ExpContext ctx) {
+        addTextoNodo(ctx, "visitExp");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitFactor(FactorContext ctx) {
+        addTextoNodo(ctx, "visitFactor");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitO(OContext ctx) {
+        addTextoNodo(ctx, "visitO");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitOpal(OpalContext ctx) {
+        addTextoNodo(ctx, "visitOpal");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitOr(OrContext ctx) {
+        addTextoNodo(ctx, "visitOr");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitTerm(TermContext ctx) {
+        addTextoNodo(ctx, "visitTerm");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitT(TContext ctx) {
+        addTextoNodo(ctx, "visitT");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
     @Override
     public String visitTerminal(TerminalNode node) {
         addTextoHoja(node.getText());
@@ -109,11 +341,11 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         texto += " -<(ERROR) " + node.getText() + "> lin " + node.getSymbol().getLine() + " - \n";
         return texto;
     }
-    
+
     public void addErrorNode (ErrorNode node) {
         errores.add(node);
     }
-    
+
     public List<ErrorNode> getErrorNodes () {
         return errores;
     }
