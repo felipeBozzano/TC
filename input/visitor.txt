@@ -1,5 +1,4 @@
-int funcion (int a) {
-    int x = a;
-}
+int x = 2;
+int b = x + 2;
+int c = x / 2 + b * 3 - 1;
 
-funcion(1);

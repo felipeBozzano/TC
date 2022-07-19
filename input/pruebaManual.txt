@@ -1,0 +1,46 @@
+Pila de variables temporales
+x - t0 - t1
+x - t0 - t2
+x - t0
+x
+-----
+
+Pila de codigo - Lista
+x - = - t0 - = - t1 - = - x - * - 2
+x - = - t0 - = - t1 - + - t2 - = - 4
+x - = - t0 - = - t1 - + - t2
+x - = - t0
+-----
+
+int x = x * 2 + 4;
+
+Declaracion
+int x
+    Lista Declaracion ---> x = t0
+    =
+        Opal ------> t0 = t1 + t2
+        t0
+            Term ----------------> t1 = x * 2
+            t1
+                Factor
+                x
+                T
+                *
+                    factor
+                    2
+                    T...
+        or
+
+            and
+
+                comp
+
+                    exp
+                    +
+                        term -------> t2 = 4
+                        t2
+                            factor
+                            4
+                            T...
+
+        Lista Declaracion...

@@ -28,11 +28,14 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 package compiladores;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.w3c.dom.TypeInfo;
 import org.antlr.v4.runtime.tree.ErrorNode;
 
 import compiladores.compiladoresParser.AContext;
@@ -73,6 +76,13 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     String texto;
     Integer indent;
     List<ErrorNode> errores;
+    String codigoDeTresDirecciones;
+    int indexVariablesTemporales = 0;
+    int indexLabelsTemporales = 0;
+    Stack<String> pilaVariablesTemporales = new Stack<String>();
+    Stack<String> pilaLabelsTemporales = new Stack<String>();
+    Stack<String> pilaCodigo = new Stack<String>();
+    String variable;
     
     public miVisitor() {
         errores = new ArrayList<>();
@@ -129,14 +139,30 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitDeclaracion(DeclaracionContext ctx) {
         addTextoNodo(ctx, "declaracion");
+
+        pilaCodigo.push(ctx.ID().getText());
+
+        pilaVariablesTemporales.push(ctx.ID().getText());
+
         visitAllHijos(ctx);
+
         return texto;
     }
 
     @Override
     public String visitListaDeclaracion(ListaDeclaracionContext ctx) {
         addTextoNodo(ctx, "listaDeclaracion");
+
+        if(ctx.IGUAL() != null) 
+            pilaCodigo.push(ctx.IGUAL().getText());
+
         visitAllHijos(ctx);
+
+        if (ctx.getChildCount() != 0) {
+            System.out.println("------------    LISTA DECLARACION    ------------");
+            imprimirCodigo();
+        }
+        
         return texto;
     }
     
@@ -283,14 +309,24 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitExp(ExpContext ctx) {
         addTextoNodo(ctx, "visitExp");
+
+        if (ctx.getChildCount() != 0)
+            pilaCodigo.push(ctx.getChild(0).getText());
+
         visitAllHijos(ctx);
+
         return texto;
     }
 
     @Override
     public String visitFactor(FactorContext ctx) {
         addTextoNodo(ctx, "visitFactor");
+
+        if(ctx.getChildCount() == 1 && ctx.invocacionFuncion() == null)
+            pilaCodigo.push(ctx.getChild(0).getText());
+
         visitAllHijos(ctx);
+
         return texto;
     }
 
@@ -304,7 +340,14 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitOpal(OpalContext ctx) {
         addTextoNodo(ctx, "visitOpal");
+
+        generadorNombresTemporales();
+
         visitAllHijos(ctx);
+
+        System.out.println("------------    OPAL    ------------");
+        imprimirCodigo();
+        
         return texto;
     }
 
@@ -318,14 +361,26 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitTerm(TermContext ctx) {
         addTextoNodo(ctx, "visitTerm");
+
+        generadorNombresTemporales();
+
         visitAllHijos(ctx);
+
+        System.out.println("------------    TERM    ------------");
+        imprimirCodigo();
+
         return texto;
     }
 
     @Override
     public String visitT(TContext ctx) {
         addTextoNodo(ctx, "visitT");
+
+        if (ctx.getChildCount() != 0)
+            pilaCodigo.push(ctx.getChild(0).getText());
+
         visitAllHijos(ctx);
+
         return texto;
     }
 
@@ -394,6 +449,41 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String toString() {
         return texto;
+    }
+
+    private void generadorNombresTemporales() {
+        String temporal = "t" + indexVariablesTemporales;
+        indexVariablesTemporales++;
+        pilaVariablesTemporales.push(temporal);
+        pilaCodigo.push(temporal);
+        pilaCodigo.push("=");
+    }
+
+    private void generadorLabelsTemporales() {
+        String temporal = "l" + indexLabelsTemporales;
+        indexLabelsTemporales++;
+        pilaLabelsTemporales.push(temporal);
+    }
+
+    // Tomamos la ultima variable temporal y la comparamos contra la
+    // ultima variable de la pila de codigo, hasta que matcheen entonces
+    // imprimimos el codigo por pantalla.
+    private void imprimirCodigo() {
+        System.out.println("pilaCodigo: " + pilaCodigo);
+        System.out.println("pilaVariablesTemporales: " + pilaVariablesTemporales);
+
+        String varTemp = pilaVariablesTemporales.pop();
+        System.out.println("varTemp: " + varTemp);
+        List<String> codigo = new LinkedList<String>();
+
+        while(!varTemp.equals(pilaCodigo.lastElement())){
+            codigo.add(0, pilaCodigo.pop());
+        }
+
+        System.out.print(varTemp + " ");
+        for(int i = 0; i < codigo.size(); i++)
+            System.out.print(codigo.get(i) + " ");
+        System.out.println("");
     }
 
 }
