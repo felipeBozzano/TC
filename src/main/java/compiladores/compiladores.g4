@@ -56,47 +56,49 @@ instruccion: inst_simple
            ;
 
 inst_simple: declaracion
-           | asignacion
+           | asignar
            ;
 
 bloque: LA instrucciones LC ;
 
 /*-----------------------------      DECLARACIONES ASIGNACIONES      ----------------------------------*/
 
-declaracion : tipoDato expresion PUNTOYCOMA ;
+declaracion: tipoDato ID listaDeclaracion PUNTOYCOMA ;
 
-expresion: ID expresion
-         | COMA expresion
-         | asignar expresion
-         |
-         ;
+listaDeclaracion: IGUAL opal listaDeclaracion
+                | COMA ID listaDeclaracion
+                |
+                ;
 
-asignacion: asignar PUNTOYCOMA ;
+asignar : asignacion PUNTOYCOMA ;
 
-asignar: ID IGUAL (opal|invocacionFuncion) ;
+asignacion: ID IGUAL opal;
 
 /*-----------------------------               FUNCIONES              ----------------------------------*/
 
-funcion: declaracionFuncion PUNTOYCOMA
+funcion: declaracionFuncion
        | invocacionFuncion PUNTOYCOMA
-       | definicionFuncion
        ;
 
-declaracionFuncion: tipoDato ID PA listaParams PC;
+declaracionFuncion: tipoDato ID PA param PC;
 
-listaParams: (param COMA)* param;
+param: tipoDato ID listaParams
+     |
+     ;
 
-param: tipoDato ID?;
+listaParams: COMA param
+           |
+           ;
 
-invocacionFuncion: ID PA listaArgs PC;
+invocacionFuncion: ID PA args PC;
 
-listaArgs: ((ID|ENTERO|invocacionFuncion) COMA)* (ID|ENTERO|invocacionFuncion);
+args: opal listaArgs
+    |
+    ;
 
-definicionFuncion: tipoDato ID PA listaParamsObligatorios PC bloque;
-
-listaParamsObligatorios: (paramObligatorio COMA)* paramObligatorio;
-
-paramObligatorio: tipoDato ID;
+listaArgs: COMA opal listaArgs
+         |
+         ;
 
 /*-----------------------------           WHILE, IF, FOR             ----------------------------------*/
 
@@ -111,15 +113,17 @@ iif: 'if' PA opal PC (bloque|inst_simple);
 
 ifor: 'for' PA condicionFor PC (bloque|inst_simple);
 
-condicionFor: (ID|asignar)? PUNTOYCOMA opal PUNTOYCOMA asignar?;
+condicionFor: (ID|asignacion) PUNTOYCOMA opal PUNTOYCOMA asignacion;
 
 /*-----------------------------                OPAL                  ----------------------------------*/
 
-opal : term or;
+opal : or;
 
 term : factor t;
 
-factor : (ENTERO|ID)
+factor : ENTERO
+       | ID
+       | invocacionFuncion
        | PA opal PC
        |
        ;
@@ -128,14 +132,16 @@ t : MULT factor t
   | DIV factor t
   | MOD factor t
   |
-  ; 
+  ;
+
+expresion : term exp;
 
 exp : SUMA term exp
     | RESTA term exp
     | 
     ;
 
-comp : exp c
+comp : expresion c
      |
      ;
 
