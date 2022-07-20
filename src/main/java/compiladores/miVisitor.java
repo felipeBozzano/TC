@@ -199,7 +199,16 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitArgs(ArgsContext ctx) {
         addTextoNodo(ctx, "visitAsignar");
-        visitAllHijos(ctx);
+        List<ParseTree> ruleFactors = findRuleNodes(ctx.opal(), compiladoresParser.RULE_factor);
+        Boolean param = false;
+        for(ParseTree ruleFactor : ruleFactors){
+            FactorContext fc = ((FactorContext)ruleFactor);
+            if(fc.getChildCount() > 0){
+                param = true;
+            }
+        }
+        if(param)
+            visitAllHijos(ctx);
         return texto;
     }
 
