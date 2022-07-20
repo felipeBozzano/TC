@@ -153,16 +153,22 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitListaDeclaracion(ListaDeclaracionContext ctx) {
         addTextoNodo(ctx, "listaDeclaracion");
 
-        if(ctx.IGUAL() != null) 
+        if(ctx.IGUAL() != null){
             pilaCodigo.push(ctx.IGUAL().getText());
+        }else{
+            if(ctx.COMA() != null){
+                pilaCodigo.push(ctx.ID().getText());
+                pilaVariablesTemporales.push(ctx.ID().getText());
+            }else{
+                return texto;
+            }
+        }
 
         visitAllHijos(ctx);
+        System.out.println("------------    LISTA DECLARACION    ------------");
+        imprimirCodigo();
+        pilaCodigo.pop();
 
-        if (ctx.getChildCount() != 0) {
-            System.out.println("------------    LISTA DECLARACION    ------------");
-            imprimirCodigo();
-        }
-        
         return texto;
     }
     
@@ -295,7 +301,12 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitC(CContext ctx) {
         addTextoNodo(ctx, "visitC");
+
+        if (ctx.getChildCount() != 0)
+            pilaCodigo.push(ctx.getChild(0).getText());
+
         visitAllHijos(ctx);
+
         return texto;
     }
 
@@ -310,10 +321,13 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitExp(ExpContext ctx) {
         addTextoNodo(ctx, "visitExp");
 
-        if (ctx.getChildCount() != 0)
+        if (ctx.getChildCount() != 0){
             pilaCodigo.push(ctx.getChild(0).getText());
-
-        visitAllHijos(ctx);
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    EXP    ------------");
+            imprimirCodigo();
+        }
 
         return texto;
     }
@@ -376,10 +390,13 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitT(TContext ctx) {
         addTextoNodo(ctx, "visitT");
 
-        if (ctx.getChildCount() != 0)
+        if (ctx.getChildCount() != 0){
             pilaCodigo.push(ctx.getChild(0).getText());
-
-        visitAllHijos(ctx);
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    T    ------------");
+            imprimirCodigo();
+        }
 
         return texto;
     }

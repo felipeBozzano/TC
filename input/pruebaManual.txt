@@ -3,44 +3,66 @@ x - t0 - t1
 x - t0 - t2
 x - t0
 x
------
+----- >
 
 Pila de codigo - Lista
 x - = - t0 - = - t1 - = - x - * - 2
 x - = - t0 - = - t1 - + - t2 - = - 4
 x - = - t0 - = - t1 - + - t2
 x - = - t0
------
+----- >
 
-int x = x * 2 + 4;
+input: int x = y * 2 > 1 + 4;
 
 Declaracion
 int x
     Lista Declaracion ---> x = t0
     =
-        Opal ------> t0 = t1 + t2
-        t0
-            Term ----------------> t1 = x * 2
-            t1
-                Factor
-                x
+        opal ------> 
+        t0, =
+            term --------->
+            t1, =
+                factor
+                pilaCodigo: y
                 T
-                *
+                pilaCodigo: *
                     factor
-                    2
+                    pilaCodigo: 2
                     T...
-        or
+            or
 
-            and
+                and
 
-                comp
+                    comp
 
-                    exp
-                    +
-                        term -------> t2 = 4
-                        t2
-                            factor
-                            4
-                            T...
+                        exp...
+
+                            term...
+                            t2, =
+                                factor...
+                                T...
+                        c
+                            comparador
+                            pilaCodigo: >
+                            term...
+                            t3, =
+                                factor
+                                pilaCodigo: 1
+
+                                T...
+                            exp
+                            pilaCodigo: +
+                                term...
+                                t4, =
+                                    factor
+                                    pilaCodigo: 4
+
+                                    T...
+                                exp...
+
 
         Lista Declaracion...
+
+------------------------------------------------------------------------------------
+
+
