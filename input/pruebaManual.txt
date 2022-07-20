@@ -12,15 +12,15 @@ x - = - t0 - = - t1 - + - t2
 x - = - t0
 ----- >
 
-input: int x = y * 2 > 1 + 4;
+input: int x = y * 2 + 1 > 1 + 4;
 
 Declaracion
 int x
     Lista Declaracion ---> x = t0
     =
-        opal ------> 
-        t0, =
-            term --------->
+        opal ------> t0 = t1 + t2
+        t0, = 
+            term ---------> t1 = y * 2
             t1, =
                 factor
                 pilaCodigo: y
@@ -35,25 +35,29 @@ int x
 
                     comp
 
-                        exp...
+                        exp ---> t2 = t3
+                        t2, =
+                        pilaCodigo: +
 
-                            term...
-                            t2, =
-                                factor...
+                            term ---> t3 = 1 > t4
+                            t3, =
+                                factor
+                                pilaCodigo: 1
                                 T...
                         c
                             comparador
                             pilaCodigo: >
-                            term...
-                            t3, =
+                            term ---> t4 = 1 + t5
+                            t4, =
                                 factor
                                 pilaCodigo: 1
 
                                 T...
-                            exp
+                            exp ---> t5 = t6
+                            t5, = 
                             pilaCodigo: +
-                                term...
-                                t4, =
+                                term ---> t6 = 4
+                                t6, =
                                     factor
                                     pilaCodigo: 4
 
