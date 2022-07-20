@@ -52,6 +52,7 @@ import compiladores.compiladoresParser.CondicionForContext;
 import compiladores.compiladoresParser.DeclaracionContext;
 import compiladores.compiladoresParser.DeclaracionFuncionContext;
 import compiladores.compiladoresParser.ExpContext;
+import compiladores.compiladoresParser.ExpresionContext;
 import compiladores.compiladoresParser.FactorContext;
 import compiladores.compiladoresParser.FuncionContext;
 import compiladores.compiladoresParser.IforContext;
@@ -287,14 +288,29 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitA(AContext ctx) {
         addTextoNodo(ctx, "visitA");
-        visitAllHijos(ctx);
+        
+        if (ctx.getChildCount() != 0){
+            pilaCodigo.push(ctx.getChild(0).getText());
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    A    ------------");
+            imprimirCodigo();
+        }
+
         return texto;
     }
 
     @Override
     public String visitAnd(AndContext ctx) {
         addTextoNodo(ctx, "visitAnd");
-        visitAllHijos(ctx);
+        
+        if (ctx.getChildCount() != 0){
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    AND    ------------");
+            imprimirCodigo();
+        }
+
         return texto;
     }
 
@@ -302,10 +318,13 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitC(CContext ctx) {
         addTextoNodo(ctx, "visitC");
 
-        if (ctx.getChildCount() != 0)
+        if (ctx.getChildCount() != 0){
             pilaCodigo.push(ctx.getChild(0).getText());
-
-        visitAllHijos(ctx);
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    C    ------------");
+            imprimirCodigo();
+        }
 
         return texto;
     }
@@ -313,7 +332,14 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitComp(CompContext ctx) {
         addTextoNodo(ctx, "visitComp");
-        visitAllHijos(ctx);
+
+        if (ctx.getChildCount() != 0){
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    COMP    ------------");
+            imprimirCodigo();
+        }
+
         return texto;
     }
 
@@ -333,6 +359,20 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     }
 
     @Override
+    public String visitExpresion(ExpresionContext ctx) {
+        addTextoNodo(ctx, "visitExpresion");
+
+        generadorNombresTemporales();
+
+        visitAllHijos(ctx);
+
+        System.out.println("------------    EXPRESION    ------------");
+        imprimirCodigo();
+
+        return texto;
+    }
+
+    @Override
     public String visitFactor(FactorContext ctx) {
         addTextoNodo(ctx, "visitFactor");
 
@@ -347,7 +387,15 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitO(OContext ctx) {
         addTextoNodo(ctx, "visitO");
-        visitAllHijos(ctx);
+    
+        if (ctx.getChildCount() != 0){
+            pilaCodigo.push(ctx.getChild(0).getText());
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    O    ------------");
+            imprimirCodigo();
+        }
+
         return texto;
     }
 
@@ -368,7 +416,14 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitOr(OrContext ctx) {
         addTextoNodo(ctx, "visitOr");
-        visitAllHijos(ctx);
+        
+        if (ctx.getChildCount() != 0){
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    OR    ------------");
+            imprimirCodigo();
+        }
+
         return texto;
     }
 

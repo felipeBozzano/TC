@@ -15,58 +15,55 @@ x - = - t0
 input: int x = y * 2 + 1 > 1 + 4;
 
 Declaracion
-int x
-    Lista Declaracion ---> x = t0
-    =
-        opal ------> t0 = t1 + t2
-        t0, = 
-            term ---------> t1 = y * 2
-            t1, =
-                factor
-                pilaCodigo: y
-                T
-                pilaCodigo: *
-                    factor
-                    pilaCodigo: 2
-                    T...
+pilaCodigo: x
+    Lista Declaracion ---> x = t9
+    pilaCodigo: =
+        opal ------> t9 = t8
+        t9, =
+
             or
-
                 and
-
-                    comp
-
-                        exp ---> t2 = t3
-                        t2, =
-                        pilaCodigo: +
-
-                            term ---> t3 = 1 > t4
-                            t3, =
+                    comp ---> t0 > t7
+                    t8, = 
+                        expresion --> t0 = t1 + t2
+                        t0, =
+                            term ---> t1 = y * 2
+                            t1, =
                                 factor
-                                pilaCodigo: 1
-                                T...
-                        c
-                            comparador
-                            pilaCodigo: >
-                            term ---> t4 = 1 + t5
+                                pilaCodigo: y
+                                T
+                                pilaCodigo: *
+                                    factor
+                                    pilaCodigo: 2
+                                    T...
+                            exp ---> + t2 = t3
+                            t2, =
+                            pilaCodigo: +
+                                term ---> t3 = 1
+                                t3, = 
+                                    factor
+                                    pilaCodigo: 1
+                                    T...
+                                exp...
+                        c  ---> > t7 = t4 + t5
+                        t7, = 
+                        pilaCodigo: >
+                            term ---> t4 = 1
                             t4, =
                                 factor
                                 pilaCodigo: 1
-
                                 T...
-                            exp ---> t5 = t6
-                            t5, = 
+                            exp ---> + t5 = t6
+                            t5, =
                             pilaCodigo: +
                                 term ---> t6 = 4
                                 t6, =
                                     factor
                                     pilaCodigo: 4
-
                                     T...
                                 exp...
 
 
         Lista Declaracion...
-
-------------------------------------------------------------------------------------
 
 
