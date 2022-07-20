@@ -178,7 +178,14 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitAsignacion(AsignacionContext ctx) {
         addTextoNodo(ctx, "visitAsignacion");
+        pilaCodigo.push(ctx.ID().getText());
+        pilaCodigo.push(ctx.IGUAL().getText());
+        pilaVariablesTemporales.push(ctx.ID().getText());
+
         visitAllHijos(ctx);
+
+        System.out.println("------------    ASIGNACION    ------------");
+        imprimirCodigo();
         return texto;
     }
 
@@ -492,11 +499,10 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         if (ctx.getChildCount() != 0){
             pilaCodigo.push(ctx.getChild(0).getText());
 
-            List<ParseTree> ruleFactors = findRuleNodes(ctx, compiladoresParser.RULE_factor);
-            if (ruleFactors.size() > 1) {
+            if (ctx.t().getChildCount() > 0) {
                 generadorNombresTemporales();
                 visitAllHijos(ctx);
-                System.out.println("------------    TERM    ------------");
+                System.out.println("------------    T    ------------");
                 imprimirCodigo();
             }
             else

@@ -67,3 +67,6 @@ pilaCodigo: x
         Lista Declaracion...
 
 
+Asignacion
+
+x = y;
