@@ -117,20 +117,24 @@ condicionFor: (ID|asignacion) PUNTOYCOMA opal PUNTOYCOMA asignacion;
 
 /*-----------------------------                OPAL                  ----------------------------------*/
 
-opal : or;
+opal : and o
+     ;
 
-term : factor t;
+o : OR and o
+  |
+  ;
 
-factor : ENTERO
-       | ID
-       | invocacionFuncion
-       | PA opal PC
-       |
-       ;
+and : comp a
+    ;
 
-t : MULT factor t
-  | DIV factor t
-  | MOD factor t
+a : AND comp a
+  |
+  ;
+
+comp : expresion c
+     ;
+
+c : comparador expresion
   |
   ;
 
@@ -138,29 +142,20 @@ expresion : term exp;
 
 exp : SUMA term exp
     | RESTA term exp
-    | 
-    ;
-
-comp : expresion c
-     |
-     ;
-
-c : comparador term exp
-  |
-  ;
-
-and : comp a
     |
     ;
 
-a : AND term and
+term : factor t;
+
+t : MULT factor t
+  | DIV factor t
+  | MOD factor t
   |
   ;
 
-or : and o
-   |
-   ;
-
-o : OR term or
-  |
-  ;
+factor : ENTERO
+       | ID
+       | invocacionFuncion
+       | PA opal PC
+       |
+       ;

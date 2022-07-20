@@ -32,9 +32,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+
+
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.Trees;
 import org.w3c.dom.TypeInfo;
 import org.antlr.v4.runtime.tree.ErrorNode;
 
@@ -67,7 +70,6 @@ import compiladores.compiladoresParser.ListaDeclaracionContext;
 import compiladores.compiladoresParser.ListaParamsContext;
 import compiladores.compiladoresParser.OContext;
 import compiladores.compiladoresParser.OpalContext;
-import compiladores.compiladoresParser.OrContext;
 import compiladores.compiladoresParser.ParamContext;
 import compiladores.compiladoresParser.SiContext;
 import compiladores.compiladoresParser.TContext;
@@ -291,10 +293,21 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         
         if (ctx.getChildCount() != 0){
             pilaCodigo.push(ctx.getChild(0).getText());
-            generadorNombresTemporales();
-            visitAllHijos(ctx);
-            System.out.println("------------    A    ------------");
-            imprimirCodigo();
+
+            Boolean hijos = true;
+            for (int i = 1; i < ctx.getChildCount(); i++) {
+                if (findRuleNodes(ctx.getChild(i), compiladoresParser.RULE_factor).size() == 0)
+                    hijos = false;
+            }
+
+            if (hijos) {
+                generadorNombresTemporales();
+                visitAllHijos(ctx);
+                System.out.println("------------    A    ------------");
+                imprimirCodigo();
+            }
+            else
+                visitAllHijos(ctx);
         }
 
         return texto;
@@ -304,12 +317,20 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitAnd(AndContext ctx) {
         addTextoNodo(ctx, "visitAnd");
         
-        if (ctx.getChildCount() != 0){
+        Boolean hijos = true;
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            if (findRuleNodes(ctx.getChild(i), compiladoresParser.RULE_factor).size() == 0)
+                hijos = false;
+        }
+
+        if (hijos) {
             generadorNombresTemporales();
             visitAllHijos(ctx);
             System.out.println("------------    AND    ------------");
             imprimirCodigo();
         }
+        else
+            visitAllHijos(ctx);
 
         return texto;
     }
@@ -317,15 +338,10 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitC(CContext ctx) {
         addTextoNodo(ctx, "visitC");
-
         if (ctx.getChildCount() != 0){
             pilaCodigo.push(ctx.getChild(0).getText());
-            generadorNombresTemporales();
             visitAllHijos(ctx);
-            System.out.println("------------    C    ------------");
-            imprimirCodigo();
         }
-
         return texto;
     }
 
@@ -333,12 +349,20 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitComp(CompContext ctx) {
         addTextoNodo(ctx, "visitComp");
 
-        if (ctx.getChildCount() != 0){
+        Boolean hijos = true;
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            if (findRuleNodes(ctx.getChild(i), compiladoresParser.RULE_factor).size() == 0)
+                hijos = false;
+        }
+
+        if (hijos) {
             generadorNombresTemporales();
             visitAllHijos(ctx);
             System.out.println("------------    COMP    ------------");
             imprimirCodigo();
         }
+        else
+            visitAllHijos(ctx);
 
         return texto;
     }
@@ -349,10 +373,21 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
         if (ctx.getChildCount() != 0){
             pilaCodigo.push(ctx.getChild(0).getText());
-            generadorNombresTemporales();
-            visitAllHijos(ctx);
-            System.out.println("------------    EXP    ------------");
-            imprimirCodigo();
+
+            Boolean hijos = true;
+            for (int i = 1; i < ctx.getChildCount(); i++) {
+                if (findRuleNodes(ctx.getChild(i), compiladoresParser.RULE_factor).size() == 0)
+                    hijos = false;
+            }
+
+            if (hijos) {
+                generadorNombresTemporales();
+                visitAllHijos(ctx);
+                System.out.println("------------    EXP    ------------");
+                imprimirCodigo();
+            }
+            else
+                visitAllHijos(ctx);
         }
 
         return texto;
@@ -362,12 +397,20 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitExpresion(ExpresionContext ctx) {
         addTextoNodo(ctx, "visitExpresion");
 
-        generadorNombresTemporales();
+        Boolean hijos = true;
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            if (findRuleNodes(ctx.getChild(i), compiladoresParser.RULE_factor).size() == 0)
+                hijos = false;
+        }
 
-        visitAllHijos(ctx);
-
-        System.out.println("------------    EXPRESION    ------------");
-        imprimirCodigo();
+        if (hijos) {
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    EXPRESION    ------------");
+            imprimirCodigo();
+        }
+        else
+            visitAllHijos(ctx);
 
         return texto;
     }
@@ -390,10 +433,21 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     
         if (ctx.getChildCount() != 0){
             pilaCodigo.push(ctx.getChild(0).getText());
-            generadorNombresTemporales();
-            visitAllHijos(ctx);
-            System.out.println("------------    O    ------------");
-            imprimirCodigo();
+
+            Boolean hijos = true;
+            for (int i = 1; i < ctx.getChildCount(); i++) {
+                if (findRuleNodes(ctx.getChild(i), compiladoresParser.RULE_factor).size() == 0)
+                    hijos = false;
+            }
+
+            if (hijos) {
+                generadorNombresTemporales();
+                visitAllHijos(ctx);
+                System.out.println("------------    O    ------------");
+                imprimirCodigo();
+            }
+            else
+                visitAllHijos(ctx);
         }
 
         return texto;
@@ -402,28 +456,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitOpal(OpalContext ctx) {
         addTextoNodo(ctx, "visitOpal");
-
-        generadorNombresTemporales();
-
         visitAllHijos(ctx);
-
-        System.out.println("------------    OPAL    ------------");
-        imprimirCodigo();
-        
-        return texto;
-    }
-
-    @Override
-    public String visitOr(OrContext ctx) {
-        addTextoNodo(ctx, "visitOr");
-        
-        if (ctx.getChildCount() != 0){
-            generadorNombresTemporales();
-            visitAllHijos(ctx);
-            System.out.println("------------    OR    ------------");
-            imprimirCodigo();
-        }
-
         return texto;
     }
 
@@ -431,14 +464,25 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitTerm(TermContext ctx) {
         addTextoNodo(ctx, "visitTerm");
 
-        generadorNombresTemporales();
+        List<ParseTree> ruleFactors = findRuleNodes(ctx, compiladoresParser.RULE_factor);
 
-        visitAllHijos(ctx);
-
-        System.out.println("------------    TERM    ------------");
-        imprimirCodigo();
+        if (ruleFactors.size() > 1) {
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    TERM    ------------");
+            imprimirCodigo();
+        }
+        else
+            visitAllHijos(ctx);
 
         return texto;
+    }
+
+    /**
+     * Obtengo un subarbol en formato ArrayList segun la regla que especifiquemos
+     */
+    private List<ParseTree> findRuleNodes(ParseTree ctx, int ruleIndex) {
+        return new ArrayList<ParseTree>(Trees.findAllRuleNodes(ctx, ruleIndex));
     }
 
     @Override
@@ -447,10 +491,16 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
         if (ctx.getChildCount() != 0){
             pilaCodigo.push(ctx.getChild(0).getText());
-            generadorNombresTemporales();
-            visitAllHijos(ctx);
-            System.out.println("------------    T    ------------");
-            imprimirCodigo();
+
+            List<ParseTree> ruleFactors = findRuleNodes(ctx, compiladoresParser.RULE_factor);
+            if (ruleFactors.size() > 1) {
+                generadorNombresTemporales();
+                visitAllHijos(ctx);
+                System.out.println("------------    TERM    ------------");
+                imprimirCodigo();
+            }
+            else
+                visitAllHijos(ctx);
         }
 
         return texto;
