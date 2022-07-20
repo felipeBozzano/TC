@@ -72,7 +72,7 @@ listaDeclaracion: IGUAL opal listaDeclaracion
 
 asignar : asignacion PUNTOYCOMA ;
 
-asignacion: ID IGUAL (opal|invocacionFuncion) ;
+asignacion: ID IGUAL opal;
 
 /*-----------------------------               FUNCIONES              ----------------------------------*/
 
@@ -117,7 +117,7 @@ condicionFor: (ID|asignacion) PUNTOYCOMA opal PUNTOYCOMA asignacion;
 
 /*-----------------------------                OPAL                  ----------------------------------*/
 
-opal : term or;
+opal : or;
 
 term : factor t;
 
@@ -132,14 +132,16 @@ t : MULT factor t
   | DIV factor t
   | MOD factor t
   |
-  ; 
+  ;
+
+expresion : term exp;
 
 exp : SUMA term exp
     | RESTA term exp
     | 
     ;
 
-comp : exp c
+comp : expresion c
      |
      ;
 
