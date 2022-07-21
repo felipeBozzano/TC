@@ -113,7 +113,11 @@ bloqueDeControl: iwhile
 
 iwhile: 'while' PA opal PC (bloque|inst_simple);
 
-iif: 'if' PA opal PC (bloque|inst_simple);
+iif: 'if' PA opal PC (bloque|inst_simple) ielse;
+
+ielse: 'else' (bloque|inst_simple)
+     |
+     ;
 
 ifor: 'for' PA condicionFor PC (bloque|inst_simple);
 

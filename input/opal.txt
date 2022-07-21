@@ -1,4 +1,3 @@
-int multiplicar(int y, int z) {
-    return y * z;
-}
-int x = multiplicar(y, z);
+int x = 0;
+for (x = 0; x < 10; x = x + 1)
+        acc = acc + 1;
