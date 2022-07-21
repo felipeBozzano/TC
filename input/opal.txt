@@ -1,1 +1,4 @@
-int x = sumar(2, 3);
+int multiplicar(int y, int z) {
+    return y * z;
+}
+int x = multiplicar(y, z);

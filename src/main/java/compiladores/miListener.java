@@ -101,6 +101,7 @@ public class miListener extends compiladoresBaseListener {
         }
         Funcion funcion = new Funcion(list, ctx.ID().getText(), ctx.tipoDato().getText(), '{');
         tablaSimbolos.addID(funcion);
+        paramsFuncion.clear();
     }
 
     @Override
@@ -166,7 +167,6 @@ public class miListener extends compiladoresBaseListener {
                 tablaSimbolos.addID(id);
             }
         }
-        paramsFuncion.clear();
     }
 
     @Override

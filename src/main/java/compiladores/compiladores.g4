@@ -31,6 +31,7 @@ DOUBLE: 'double' ;
 COMA: ',' ;
 PUNTOYCOMA: ';' ;
 IGUAL: '=';
+RETURN: 'return';
 tipoDato: INT | DOUBLE ;
 comparador : IGUALDAD | DESIGUALDAD | MENOR | MAYOR | MENOR_IGUAL | MAYOR_IGUAL;
 ENTERO : DIGITO+;
@@ -57,6 +58,7 @@ instruccion: inst_simple
 
 inst_simple: declaracion
            | asignar
+           | retorno
            ;
 
 bloque: LA instrucciones LC ;
@@ -80,7 +82,7 @@ funcion: declaracionFuncion
        | invocacionFuncion PUNTOYCOMA
        ;
 
-declaracionFuncion: tipoDato ID PA param PC;
+declaracionFuncion: tipoDato ID PA param PC bloque;
 
 param: tipoDato ID listaParams
      |
@@ -99,6 +101,8 @@ args: opal listaArgs
 listaArgs: COMA opal listaArgs
          |
          ;
+
+retorno : RETURN opal PUNTOYCOMA;
 
 /*-----------------------------           WHILE, IF, FOR             ----------------------------------*/
 

@@ -27,12 +27,13 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
 package compiladores;
 
+import java.net.http.HttpResponse.PushPromiseHandler;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
-
-
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.RuleContext;
@@ -70,6 +71,7 @@ import compiladores.compiladoresParser.ListaParamsContext;
 import compiladores.compiladoresParser.OContext;
 import compiladores.compiladoresParser.OpalContext;
 import compiladores.compiladoresParser.ParamContext;
+import compiladores.compiladoresParser.RetornoContext;
 import compiladores.compiladoresParser.SiContext;
 import compiladores.compiladoresParser.TContext;
 import compiladores.compiladoresParser.TermContext;
@@ -79,15 +81,21 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     Integer indent;
     List<ErrorNode> errores;
     String codigoDeTresDirecciones;
-    int indexVariablesTemporales = 0;
-    int indexLabelsTemporales = 0;
-    Stack<String> pilaVariablesTemporales = new Stack<String>();
-    Stack<String> pilaLabelsTemporales = new Stack<String>();
-    Stack<String> pilaCodigo = new Stack<String>();
-    String variable;
+    int indexVariablesTemporales;
+    int indexLabelsTemporales;
+    Stack<String> pilaVariablesTemporales;
+    Stack<String> pilaLabelsTemporales;
+    Stack<String> pilaCodigo;
+    Map<String,String> funciones;
     
     public miVisitor() {
         errores = new ArrayList<>();
+        indexVariablesTemporales = 0;
+        indexLabelsTemporales = 0;
+        pilaVariablesTemporales = new Stack<String>();
+        pilaLabelsTemporales = new Stack<String>();
+        pilaCodigo = new Stack<String>();
+        funciones = new HashMap<String,String>();
         initString();
     }
     
@@ -167,9 +175,11 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         }
 
         visitAllHijos(ctx);
-        System.out.println("------------    LISTA DECLARACION    ------------");
+        // System.out.println("------------    LISTA DECLARACION    ------------");
         imprimirCodigo();
         pilaCodigo.pop();
+        // System.out.println("pilaCodigo: " + pilaCodigo);
+
 
         return texto;
     }
@@ -183,7 +193,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
         visitAllHijos(ctx);
 
-        System.out.println("------------    ASIGNACION    ------------");
+        // System.out.println("------------    ASIGNACION    ------------");
         imprimirCodigo();
         return texto;
     }
@@ -198,6 +208,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitArgs(ArgsContext ctx) {
         addTextoNodo(ctx, "visitAsignar");
+
         List<ParseTree> ruleFactors = findRuleNodes(ctx.opal(), compiladoresParser.RULE_factor);
         Boolean param = false;
         for(ParseTree ruleFactor : ruleFactors){
@@ -208,6 +219,12 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         }
         if(param) {
             visitAllHijos(ctx);
+
+            // System.out.println("------------    VISIT ARGS    ------------");
+            // System.out.println("pilaCodigo: " + pilaCodigo);
+
+            while(!pilaCodigo.lastElement().equals("="))
+                System.out.println("push " + pilaCodigo.pop());
         }
         return texto;
     }
@@ -236,7 +253,53 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitDeclaracionFuncion(DeclaracionFuncionContext ctx) {
         addTextoNodo(ctx, "visitDeclaracionFuncion");
+
+        String label = nuevoLabel();
+        funciones.put(ctx.ID().getText(), label);
+
+        generadorNombresTemporales();
+        pilaCodigo.push("pop");
+
+        // System.out.println("-----    VISIT DECLARACION FUNCION    -----");
+        System.out.println("label " + label);
+        imprimirCodigo();
         visitAllHijos(ctx);
+        System.out.println("jmp " + pilaCodigo.pop());
+        return texto;
+    }
+
+    @Override
+    public String visitParam(ParamContext ctx) {
+        addTextoNodo(ctx, "visitParam");
+        if (ctx.ID() != null){
+            pilaCodigo.push(ctx.ID().getText());
+            pilaCodigo.push("=");
+            pilaCodigo.push("pop");
+            pilaVariablesTemporales.push(ctx.ID().getText());
+
+            visitAllHijos(ctx);
+        
+            // System.out.println("------------    VISIT PARAM    ------------");
+            imprimirCodigo();
+            pilaCodigo.pop();
+        }
+        return texto;
+    }
+
+    @Override
+    public String visitListaParams(ListaParamsContext ctx) {
+        addTextoNodo(ctx, "visitListaParams");
+        visitAllHijos(ctx);
+        return texto;
+    }
+
+    @Override
+    public String visitRetorno(RetornoContext ctx) {
+        addTextoNodo(ctx, "visitRetorno");
+        visitAllHijos(ctx);
+        // System.out.println("------------    VISIT RETORNO    ------------");
+        // System.out.println("pilaCodigo: " + pilaCodigo);
+        System.out.println("push " + pilaCodigo.pop());
         return texto;
     }
 
@@ -272,6 +335,13 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitInvocacionFuncion(InvocacionFuncionContext ctx) {
         addTextoNodo(ctx, "visitInvocacionFuncion");
         visitAllHijos(ctx);
+        // System.out.println("------------    VISIT INVOCACION FUNCION    ------------");
+        String label = nuevoLabel();
+        System.out.println("push " + label);
+        String funcion = ctx.ID().getText();
+        System.out.println("jmp " + funciones.get(funcion));
+        System.out.println("label " + label);
+        pilaCodigo.push("pop");
         return texto;
     }
 
@@ -285,20 +355,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitListaArgs(ListaArgsContext ctx) {
         addTextoNodo(ctx, "visitListaArgs");
-        visitAllHijos(ctx);
-        return texto;
-    }
-
-    @Override
-    public String visitListaParams(ListaParamsContext ctx) {
-        addTextoNodo(ctx, "visitListaParams");
-        visitAllHijos(ctx);
-        return texto;
-    }
-
-    @Override
-    public String visitParam(ParamContext ctx) {
-        addTextoNodo(ctx, "visitParam");
         visitAllHijos(ctx);
         return texto;
     }
@@ -319,7 +375,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             if (hijos) {
                 generadorNombresTemporales();
                 visitAllHijos(ctx);
-                System.out.println("------------    A    ------------");
+                // System.out.println("------------    A    ------------");
                 imprimirCodigo();
             }
             else
@@ -342,7 +398,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         if (hijos) {
             generadorNombresTemporales();
             visitAllHijos(ctx);
-            System.out.println("------------    AND    ------------");
+            // System.out.println("------------    AND    ------------");
             imprimirCodigo();
         }
         else
@@ -374,7 +430,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         if (hijos) {
             generadorNombresTemporales();
             visitAllHijos(ctx);
-            System.out.println("------------    COMP    ------------");
+            // System.out.println("------------    COMP    ------------");
             imprimirCodigo();
         }
         else
@@ -399,7 +455,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             if (hijos) {
                 generadorNombresTemporales();
                 visitAllHijos(ctx);
-                System.out.println("------------    EXP    ------------");
+                // System.out.println("------------    EXP    ------------");
                 imprimirCodigo();
             }
             else
@@ -422,7 +478,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         if (hijos) {
             generadorNombresTemporales();
             visitAllHijos(ctx);
-            System.out.println("------------    EXPRESION    ------------");
+            // System.out.println("------------    EXPRESION    ------------");
             imprimirCodigo();
         }
         else
@@ -459,7 +515,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             if (hijos) {
                 generadorNombresTemporales();
                 visitAllHijos(ctx);
-                System.out.println("------------    O    ------------");
+                // System.out.println("------------    O    ------------");
                 imprimirCodigo();
             }
             else
@@ -485,7 +541,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         /* if (ruleFactors.size() > 1) {
             generadorNombresTemporales();
             visitAllHijos(ctx);
-            System.out.println("------------    TERM    ------------");
+            // System.out.println("------------    TERM    ------------");
             imprimirCodigo();
         }
         else
@@ -494,7 +550,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         if (ctx.t().getChildCount() > 0) {
             generadorNombresTemporales();
             visitAllHijos(ctx);
-            System.out.println("------------    TERM    ------------");
+            // System.out.println("------------    TERM    ------------");
             imprimirCodigo();
         }
         else
@@ -520,7 +576,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             if (ctx.t().getChildCount() > 0) {
                 generadorNombresTemporales();
                 visitAllHijos(ctx);
-                System.out.println("------------    T    ------------");
+                // System.out.println("------------    T    ------------");
                 imprimirCodigo();
             }
             else
@@ -605,21 +661,19 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         pilaCodigo.push("=");
     }
 
-    /* private void generadorLabelsTemporales() {
-        String temporal = "l" + indexLabelsTemporales;
-        indexLabelsTemporales++;
-        pilaLabelsTemporales.push(temporal);
-    } */
+    private String nuevoLabel() {
+        return "l" + indexLabelsTemporales++;
+    }
 
     // Tomamos la ultima variable temporal y la comparamos contra la
     // ultima variable de la pila de codigo, hasta que matcheen entonces
     // imprimimos el codigo por pantalla.
     private void imprimirCodigo() {
-        System.out.println("pilaCodigo: " + pilaCodigo);
-        System.out.println("pilaVariablesTemporales: " + pilaVariablesTemporales);
+        /* System.out.println("pilaCodigo: " + pilaCodigo);
+        System.out.println("pilaVariablesTemporales: " + pilaVariablesTemporales); */
 
         String varTemp = pilaVariablesTemporales.pop();
-        System.out.println("varTemp: " + varTemp);
+        /* System.out.println("varTemp: " + varTemp); */
         List<String> codigo = new LinkedList<String>();
 
         while(!varTemp.equals(pilaCodigo.lastElement())){
@@ -631,5 +685,4 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             System.out.print(codigo.get(i) + " ");
         System.out.println("");
     }
-
 }
