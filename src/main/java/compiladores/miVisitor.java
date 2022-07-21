@@ -38,7 +38,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.Trees;
-import org.w3c.dom.TypeInfo;
 import org.antlr.v4.runtime.tree.ErrorNode;
 
 import compiladores.compiladoresParser.AContext;
@@ -480,9 +479,18 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitTerm(TermContext ctx) {
         addTextoNodo(ctx, "visitTerm");
 
-        List<ParseTree> ruleFactors = findRuleNodes(ctx, compiladoresParser.RULE_factor);
+        /* List<ParseTree> ruleFactors = findRuleNodes(ctx, compiladoresParser.RULE_factor); */
 
-        if (ruleFactors.size() > 1) {
+        /* if (ruleFactors.size() > 1) {
+            generadorNombresTemporales();
+            visitAllHijos(ctx);
+            System.out.println("------------    TERM    ------------");
+            imprimirCodigo();
+        }
+        else
+            visitAllHijos(ctx); */
+
+        if (ctx.t().getChildCount() > 0) {
             generadorNombresTemporales();
             visitAllHijos(ctx);
             System.out.println("------------    TERM    ------------");
@@ -596,11 +604,11 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         pilaCodigo.push("=");
     }
 
-    private void generadorLabelsTemporales() {
+    /* private void generadorLabelsTemporales() {
         String temporal = "l" + indexLabelsTemporales;
         indexLabelsTemporales++;
         pilaLabelsTemporales.push(temporal);
-    }
+    } */
 
     // Tomamos la ultima variable temporal y la comparamos contra la
     // ultima variable de la pila de codigo, hasta que matcheen entonces

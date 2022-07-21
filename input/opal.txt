@@ -1,1 +1,1 @@
-x = suma(3, 4);
+int x = sumar(2, 3);
