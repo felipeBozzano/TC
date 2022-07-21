@@ -206,8 +206,9 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
                 param = true;
             }
         }
-        if(param)
+        if(param) {
             visitAllHijos(ctx);
+        }
         return texto;
     }
 
