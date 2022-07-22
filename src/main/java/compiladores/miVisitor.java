@@ -1,11 +1,16 @@
 package compiladores;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Stack;
 
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -61,8 +66,10 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     Stack<String> pilaLabelsTemporales;
     Stack<String> pilaCodigo;
     Map<String,String> funciones;
+    PrintWriter out;
+    PrintWriter outOptimizado;
     
-    public miVisitor() {
+    public miVisitor() throws FileNotFoundException {
         errores = new ArrayList<>();
         indexVariablesTemporales = 0;
         indexLabelsTemporales = 0;
@@ -71,6 +78,8 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         pilaCodigo = new Stack<String>();
         funciones = new HashMap<String,String>();
         initString();
+        out = new PrintWriter("codigo-intermedio.txt");
+        outOptimizado = new PrintWriter("codigo-intermedio-optimizado.txt");
     }
     
     /**
@@ -92,6 +101,8 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         // texto += " -<(prog) {" + ctx.getChildCount() + " hijos -> ";
         addTextoNodo(ctx, "programa");
         visitAllHijos(ctx);
+        out.close();
+        optimizarCodigo();
         // texto += "} >- \n";
         return texto;
     }
@@ -698,8 +709,76 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         }
 
         System.out.print(varTemp + " ");
-        for(int i = 0; i < codigo.size(); i++)
+        out.print(varTemp + " ");
+        for(int i = 0; i < codigo.size(); i++){
             System.out.print(codigo.get(i) + " ");
+            out.print(codigo.get(i) + " ");
+        }
         System.out.println("");
+        out.println("");
+    }
+
+    private void optimizarCodigo() {
+        try{  
+        //the file to be opened for reading  
+            FileInputStream fis = new FileInputStream("codigo-intermedio.txt");       
+            Scanner sc = new Scanner(fis);    //file to be scanned  
+            //returns true if there is another line to read
+            String lineaAnterior = null;
+            while(sc.hasNextLine()){
+                if(lineaAnterior != null){
+                    String splitAnterior[] = lineaAnterior.split(" ");
+                    String variable = splitAnterior[0];
+                    if(variable.charAt(0) == 't' && sc.hasNextLine()){
+                        String lineaActual = sc.nextLine();
+                        String splitActual[] = lineaActual.split(" ");
+                        if(splitActual.length == 2){
+                            if(splitActual[2] == variable){
+                                outOptimizado.print(splitActual[0] + " ");
+                                for(int i = 1; i < splitAnterior.length; i++){
+                                    outOptimizado.print(splitAnterior[i]);
+                                    outOptimizado.print(" ");
+                                }
+                                outOptimizado.println();
+                            }
+                        }else{
+                            outOptimizado.println(lineaAnterior);
+                            lineaAnterior = lineaActual;
+                        }
+                    }else{
+                        outOptimizado.println(lineaAnterior);
+                        lineaAnterior = sc.nextLine();
+                    }
+                }
+                lineaAnterior = sc.nextLine();
+                String splitAnterior[] = lineaAnterior.split(" ");
+                String variable = splitAnterior[0];
+                if(variable.charAt(0) == 't'){
+                    if(sc.hasNextLine()){
+                        String lineaActual = sc.nextLine();
+                        String splitActual[] = lineaActual.split(" ");
+                        if(splitActual.length == 2){
+                            if(splitActual[2] == variable){
+                                outOptimizado.print(splitActual[0] + " ");
+                                for(int i = 1; i < splitAnterior.length; i++){
+                                    outOptimizado.print(splitAnterior[i]);
+                                    outOptimizado.print(" ");
+                                }
+                                outOptimizado.println();
+                            }
+                        }else{
+                            outOptimizado.println(lineaAnterior);
+                        }
+                    }
+                }else{
+                    outOptimizado.println(lineaAnterior);
+                }
+            }  
+            sc.close();
+            outOptimizado.close();
+        }  
+        catch(IOException e){
+            e.printStackTrace();  
+        }  
     }
 }

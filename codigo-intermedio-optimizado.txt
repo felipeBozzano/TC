@@ -1,0 +1,10 @@
+b = 1 
+y = 2 
+z = 3 
+acc = 4 
+y = t4 
+y = t7 
+acc = t9 
+x = 0 
+acc = t12 
+y = pop 
