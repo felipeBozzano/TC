@@ -217,8 +217,10 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
             Iterator<String> iterator = listaVariables.descendingIterator();
             if(listaVariables.size() > 0){
-                while (iterator.hasNext())
+                while (iterator.hasNext()){
                     System.out.println("push " + iterator.next());
+                    out.println("push " + iterator.next());
+                }
             }
         }
         return texto;
@@ -257,9 +259,12 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
         // System.out.println("-----    VISIT DECLARACION FUNCION    -----");
         System.out.println("label " + label);
+        out.println("label " + label);
         imprimirCodigo();
         visitAllHijos(ctx);
-        System.out.println("jmp " + pilaCodigo.pop());
+        String temp = pilaCodigo.pop();
+        System.out.println("jmp " + temp);
+        out.println("jmp " + temp);
         return texto;
     }
 
@@ -292,7 +297,9 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         visitAllHijos(ctx);
         // System.out.println("------------    VISIT RETORNO    ------------");
         // System.out.println("pilaCodigo: " + pilaCodigo);
-        System.out.println("push " + pilaCodigo.pop());
+        String temp = pilaCodigo.pop();
+        System.out.println("push " + temp);
+        out.println("push " + temp);
         return texto;
     }
 
@@ -311,12 +318,17 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         if(ctx.condicionFor().ID() == null)
             visit(ctx.condicionFor().getChild(0));
         System.out.println("label " + labelIn);
+        out.println("label " + labelIn);
         visit(ctx.condicionFor().opal());
-        System.out.println("ifnjmp " + pilaCodigo.pop() + ", " + labelOut );
+        String temp = pilaCodigo.pop();
+        System.out.println("ifnjmp " + temp + ", " + labelOut );
+        out.println("ifnjmp " + temp + ", " + labelOut );
         visit(ctx.getChild(4));
         visit(ctx.condicionFor().getChild(4));
         System.out.println("jmp " + labelIn);
+        out.println("jmp " + labelIn);
         System.out.println("label " + labelOut);
+        out.println("label " + labelOut);
         return texto;
     }
 
@@ -325,22 +337,31 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         addTextoNodo(ctx, "visitIif");
         visit(ctx.opal());
         pilaLabelsTemporales.push(nuevoLabel());
-        System.out.println("ifnjmp " + pilaCodigo.pop() + ", " + pilaLabelsTemporales.lastElement());
+        String temp = pilaCodigo.pop();
+        System.out.println("ifnjmp " + temp + ", " + pilaLabelsTemporales.lastElement());
+        out.println("ifnjmp " + temp + ", " + pilaLabelsTemporales.lastElement());
         visit(ctx.getChild(4));
         if(ctx.ielse().getChildCount() > 0){
             String labelExit = nuevoLabel();
             System.out.println("jmp " + labelExit);
+            out.println("jmp " + labelExit);
             visit(ctx.ielse());
             System.out.println("label " + labelExit);
-        }else
-            System.out.println("label " + pilaLabelsTemporales.pop());
+            out.println("label " + labelExit);
+        }else{
+            String temporal = pilaLabelsTemporales.pop();
+            System.out.println("label " + temporal);
+            out.println("label " + temporal);
+        }
         return texto;
     }
 
     @Override
     public String visitIelse(IelseContext ctx) {
         addTextoNodo(ctx, "visitIelse");
-        System.out.println("label " + pilaLabelsTemporales.pop());
+        String temp = pilaLabelsTemporales.pop();
+        System.out.println("label " + temp);
+        out.println("label " + temp);
         visitAllHijos(ctx);
         return texto;
     }
@@ -359,9 +380,12 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         // System.out.println("------------    VISIT INVOCACION FUNCION    ------------");
         String label = nuevoLabel();
         System.out.println("push " + label);
+        out.println("push " + label);
         String funcion = ctx.ID().getText();
         System.out.println("jmp " + funciones.get(funcion));
+        out.println("jmp " + funciones.get(funcion));
         System.out.println("label " + label);
+        out.println("label " + label);
         pilaCodigo.push("pop");
         return texto;
     }
@@ -372,11 +396,16 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         String labelIn = nuevoLabel();
         String labelOut = nuevoLabel();
         System.out.println("label " + labelIn);
+        out.println("label " + labelIn);
         visit(ctx.opal());
-        System.out.println("ifnjmp " + pilaCodigo.pop() + ", " + labelOut );
+        String temp = pilaCodigo.pop();
+        System.out.println("ifnjmp " + temp + ", " + labelOut );
+        out.println("ifnjmp " + temp + ", " + labelOut );
         visit(ctx.getChild(4));
         System.out.println("jmp " + labelIn);
+        out.println("jmp " + labelIn);
         System.out.println("label " + labelOut);
+        out.println("label " + labelOut);
         return texto;
     }
 
@@ -729,17 +758,50 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
                 if(lineaAnterior != null){
                     String splitAnterior[] = lineaAnterior.split(" ");
                     String variable = splitAnterior[0];
-                    if(variable.charAt(0) == 't' && sc.hasNextLine()){
+                    if(variable.charAt(0) == 't'){
                         String lineaActual = sc.nextLine();
                         String splitActual[] = lineaActual.split(" ");
-                        if(splitActual.length == 2){
-                            if(splitActual[2] == variable){
+                        if(splitActual.length == 3){
+
+                            /* outOptimizado.println("Split anterior");
+                            for(int i = 0; i < splitAnterior.length; i++){
+                                outOptimizado.print(splitAnterior[i] + " ");
+                            }
+                            outOptimizado.println();
+                            outOptimizado.println("------------------");
+
+                            outOptimizado.println("Split actual");
+                            for(int i = 0; i < splitActual.length; i++){
+                                outOptimizado.print(splitActual[i] + " ");
+                            }
+                            outOptimizado.println();
+                            outOptimizado.println("------------------"); */
+
+                            if(splitActual[2].equals(variable)){
+                                
+                                /* outOptimizado.println("Split actual [0]");
+                                outOptimizado.println(splitActual[0] + " ");
+                                outOptimizado.println("------------------");
+                                
+                                outOptimizado.println("Split anterior [1--n]");
+                                for(int i = 1; i < splitAnterior.length; i++){
+                                    outOptimizado.print(splitAnterior[i]);
+                                    outOptimizado.print(" ");
+                                }
+                                outOptimizado.println();
+                                outOptimizado.println("------------------"); */
+                                
                                 outOptimizado.print(splitActual[0] + " ");
                                 for(int i = 1; i < splitAnterior.length; i++){
                                     outOptimizado.print(splitAnterior[i]);
                                     outOptimizado.print(" ");
                                 }
                                 outOptimizado.println();
+                                if(sc.hasNextLine())
+                                    lineaAnterior = sc.nextLine();
+                            }else{
+                                outOptimizado.println(lineaAnterior);
+                                lineaAnterior = lineaActual;
                             }
                         }else{
                             outOptimizado.println(lineaAnterior);
@@ -750,30 +812,10 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
                         lineaAnterior = sc.nextLine();
                     }
                 }
-                lineaAnterior = sc.nextLine();
-                String splitAnterior[] = lineaAnterior.split(" ");
-                String variable = splitAnterior[0];
-                if(variable.charAt(0) == 't'){
-                    if(sc.hasNextLine()){
-                        String lineaActual = sc.nextLine();
-                        String splitActual[] = lineaActual.split(" ");
-                        if(splitActual.length == 2){
-                            if(splitActual[2] == variable){
-                                outOptimizado.print(splitActual[0] + " ");
-                                for(int i = 1; i < splitAnterior.length; i++){
-                                    outOptimizado.print(splitAnterior[i]);
-                                    outOptimizado.print(" ");
-                                }
-                                outOptimizado.println();
-                            }
-                        }else{
-                            outOptimizado.println(lineaAnterior);
-                        }
-                    }
-                }else{
-                    outOptimizado.println(lineaAnterior);
-                }
-            }  
+                else
+                    lineaAnterior = sc.nextLine();
+            }
+            outOptimizado.println(lineaAnterior);
             sc.close();
             outOptimizado.close();
         }  

@@ -2,9 +2,44 @@ b = 1
 y = 2 
 z = 3 
 acc = 4 
-y = t4 
-y = t7 
-acc = t9 
+t2 = y / z 
+t1 = t2 + 3 
+x = b + t1 
+t3 = x < 0 
+ifnjmp t3, l0
+y = z + 10 
+jmp l1
+label l0
+y = z - 10 
+label l1
+t6 = x < 0 
+ifnjmp t6, l2
+y = z + 10 
+label l2
+label l3
+t8 = x < 10 
+ifnjmp t8, l4
+acc = acc + 1 
+x = x + 1 
+jmp l3
+label l4
 x = 0 
-acc = t12 
+label l5
+t11 = x < 10 
+ifnjmp t11, l6
+acc = acc + 1 
+x = x + 1 
+jmp l5
+label l6
+label l7
+t14 = pop 
+z = pop 
 y = pop 
+t15 = y * z 
+push t15
+jmp t14
+push z
+push l8
+jmp l7
+label l8
+x = pop 
