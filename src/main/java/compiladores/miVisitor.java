@@ -1,35 +1,8 @@
-/* package compiladores;
-
-import compiladores.compiladoresParser.FactorContext;
-import compiladores.compiladoresParser.SiContext;
-
-public class miVisitor extends compiladoresBaseVisitor<String> {
-
-    @Override
-    public String visitSi(SiContext ctx) {
-        System.out.println("Comenzamos a recorrer el arbol");
-        visitChildren(ctx);
-        System.out.println("Fin del recorrido");
-        return "Hola";
-    }
-
-    @Override
-    public String visitFactor(FactorContext ctx) {
-        System.out.println("\tFactor -> tiene " + ctx.getChildCount() + " hijos");
-        System.out.println("\t--> " + ctx.getText());
-        if (ctx.getChildCount() != 3)
-            visitChildren(ctx);
-        return "Factor";
-    }
-    
-}
- */
-
 package compiladores;
 
-import java.net.http.HttpResponse.PushPromiseHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -224,8 +197,16 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             // System.out.println("------------    VISIT ARGS    ------------");
             // System.out.println("pilaCodigo: " + pilaCodigo);
 
+            LinkedList<String> listaVariables = new LinkedList<String>();
+
             while(!pilaCodigo.lastElement().equals("="))
-                System.out.println("push " + pilaCodigo.pop());
+                listaVariables.add(pilaCodigo.pop());
+
+            Iterator<String> iterator = listaVariables.descendingIterator();
+            if(listaVariables.size() > 0){
+                while (iterator.hasNext())
+                    System.out.println("push " + iterator.next());
+            }
         }
         return texto;
     }
@@ -247,7 +228,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitCondicionFor(CondicionForContext ctx) {
         addTextoNodo(ctx, "visitCondicionFor");
-
         visitAllHijos(ctx);
         return texto;
     }
@@ -278,9 +258,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             pilaCodigo.push("=");
             pilaCodigo.push("pop");
             pilaVariablesTemporales.push(ctx.ID().getText());
-
             visitAllHijos(ctx);
-        
             // System.out.println("------------    VISIT PARAM    ------------");
             imprimirCodigo();
             pilaCodigo.pop();

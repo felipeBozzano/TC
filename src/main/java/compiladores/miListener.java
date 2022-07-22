@@ -22,15 +22,17 @@ import tablaSimbolos.TipoDato;
 import tablaSimbolos.Variable;
 
 public class miListener extends compiladoresBaseListener {
-    private String[] nombres;
-    private Integer bloque = 1;
-    private Integer count = 0;
-    private TablaSimbolos tablaSimbolos = new TablaSimbolos();
-    private LinkedList<ID> paramsFuncion = new LinkedList<ID>();
+    private Integer bloque;
+    private Integer count;
+    private TablaSimbolos tablaSimbolos;
+    private LinkedList<ID> paramsFuncion;
     private Boolean error;
 
     miListener(compiladoresParser parser){
-        nombres = parser.getRuleNames();
+        bloque = 1;
+        count = 0;
+        tablaSimbolos = new TablaSimbolos();
+        paramsFuncion = new LinkedList<ID>();
         error = false;
     }
 
