@@ -2,7 +2,7 @@ int b = 1;
 int y = 2;
 int z = 3;
 int acc = 4;
-int x = b - y / z + 3;
+int x = b + y / z + 3;
 
 if(x<0)
     y = z + 10;

@@ -169,6 +169,8 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
         // System.out.println("------------    ASIGNACION    ------------");
         imprimirCodigo();
+        pilaCodigo.pop();
+        // System.out.println("pilaCodigo: " + pilaCodigo);
         return texto;
     }
 
@@ -574,13 +576,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         return texto;
     }
 
-    /**
-     * Obtengo un subarbol en formato ArrayList segun la regla que especifiquemos
-     */
-    private List<ParseTree> findRuleNodes(ParseTree ctx, int ruleIndex) {
-        return new ArrayList<ParseTree>(Trees.findAllRuleNodes(ctx, ruleIndex));
-    }
-
     @Override
     public String visitT(TContext ctx) {
         addTextoNodo(ctx, "visitT");
@@ -666,6 +661,13 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String toString() {
         return texto;
+    }
+
+    /**
+     * Obtengo un subarbol en formato ArrayList segun la regla que especifiquemos
+     */
+    private List<ParseTree> findRuleNodes(ParseTree ctx, int ruleIndex) {
+        return new ArrayList<ParseTree>(Trees.findAllRuleNodes(ctx, ruleIndex));
     }
 
     private void generadorNombresTemporales() {
