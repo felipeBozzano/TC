@@ -1,4 +1,26 @@
-int multiplicar(int y, int z) {
-    return y * z;
+int b = 1;
+int y = 2;
+int z = 3;
+int acc = 4;
+int x = b - y / z + 3
+
+if(x<0)
+    y = z + 10;
+else
+    y = z - 10;
+
+if(x<0)
+    y = z + 10;
+
+while(x < 10)
+    acc = acc + 1;
+    x = x + 1;
+
+for(x = 0; x < 10; x = x + 1)
+    acc = acc + 1;
+
+int f (int y, int z){
+    return y * z
 }
-int x = multiplicar(y, z);
+
+x = f(y,z);

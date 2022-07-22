@@ -27,14 +27,25 @@ public class miListener extends compiladoresBaseListener {
     private Integer count = 0;
     private TablaSimbolos tablaSimbolos = new TablaSimbolos();
     private LinkedList<ID> paramsFuncion = new LinkedList<ID>();
+    private Boolean error;
 
     miListener(compiladoresParser parser){
         nombres = parser.getRuleNames();
+        error = false;
+    }
+
+    public Boolean getError() {
+        return error;
+    }
+
+    public void setError(Boolean error) {
+        this.error = error;
     }
 
     @Override
     public void exitDeclaracion(DeclaracionContext ctx) {
         if(this.tablaSimbolos.searchID(ctx.ID().getText()) != null){
+            setError(true);
             System.out.println("\t\tERROR SEMANTICO: Doble declaración del mismo identificador -- ID: " + ctx.ID());
             return;
         }
@@ -75,6 +86,7 @@ public class miListener extends compiladoresBaseListener {
     public void exitAsignacion(AsignacionContext ctx) {
         ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
         if(temp == null){
+            setError(true);
             System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
             return;
         }
@@ -84,6 +96,7 @@ public class miListener extends compiladoresBaseListener {
     @Override
     public void exitDeclaracionFuncion(DeclaracionFuncionContext ctx) {
         if(this.tablaSimbolos.searchID(ctx.ID().getText()) != null){
+            setError(true);
             System.out.println("\t\tERROR SEMANTICO: Doble declaración del mismo identificador -- ID: " + ctx.ID());
             return;
         }
@@ -108,6 +121,7 @@ public class miListener extends compiladoresBaseListener {
     public void exitInvocacionFuncion(InvocacionFuncionContext ctx) {
         ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
         if(temp == null){
+            setError(true);
             System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
         }else{
             temp.setUsada(true);
@@ -121,11 +135,13 @@ public class miListener extends compiladoresBaseListener {
         }
         ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
         if(temp == null) {
+            setError(true);
             System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
             return;
         }
         else {
             if(!temp.getInicializada()) {
+                setError(true);
                 System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no inicializado -- ID: " + ctx.ID());
                 return;
             }
@@ -146,10 +162,12 @@ public class miListener extends compiladoresBaseListener {
         if (ctx.ID() != null) {
             ID temp = this.tablaSimbolos.searchID(ctx.ID().getText());
             if(temp == null) {
+                setError(true);
                 System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no declarado -- ID: " + ctx.ID());
                 return;
             }
             if(!temp.getInicializada()) {
+                setError(true);
                 System.out.println("\t\tERROR SEMANTICO: Uso de un identificador no inicializado -- ID: " + ctx.ID());
                 return;
             }
@@ -174,6 +192,7 @@ public class miListener extends compiladoresBaseListener {
         int posicionUltimoContexto = tablaSimbolos.getSimbolos().size()-1;
         for (var entry : tablaSimbolos.getSimbolos().get(posicionUltimoContexto).entrySet()) {
             if(!entry.getValue().getUsada()) {
+                setError(true);
                 System.out.println("\t\tERROR SEMANTICO: Identificador declarado pero no usado");
                 System.out.print("\t");
             }
@@ -200,6 +219,7 @@ public class miListener extends compiladoresBaseListener {
         int posicionUltimoContexto = tablaSimbolos.getSimbolos().size()-1;
         for (var entry : tablaSimbolos.getSimbolos().get(posicionUltimoContexto).entrySet()) {
             if(!entry.getValue().getUsada()) {
+                setError(true);
                 System.out.println("\t\tERROR SEMANTICO: Identificador declarado pero no usado");
                 System.out.print("\t");
             }
