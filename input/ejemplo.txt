@@ -1,0 +1,85 @@
+int x = b * 2 + y;
+
+**Declaracion**
+  | pilaCodigo: [x] 
+  | pilaVariablesTemporales: [x] 
+  |
+  +--> (listaDeclaracion)
+  |    | pilaCodigo: [x, =]
+  |    | pilaVariablesTemporales: [x] 
+  |    |
+  |    +--> (visitOpal)
+  |    | Opal tiene 2 hijos, And y O, entonces vemos si ambos tienen reglas del tipo factor. 
+  |    | Como sólo And tiene, Opal no genera una variable intermedia.
+  |    |
+  |    |    +--> (visitAnd) Idem Opal
+  |    |    |
+  |    |    |    +--> (visitComp) Idem Opal
+  |    |    |    |
+  |    |    |    |    +--> (visitExpresion)
+  |    |    |    |    | Expresion tiene 2 hijos, Term y Exp, entonces vemos si ambos tienen reglas del tipo factor.
+  |    |    |    |    | Como ambos tienen reglas del tipo factor, Expresion genera una variable temporal.
+  |    |    |    |    | pilaCodigo: [x, =, t0, =]
+  |    |    |    |    | pilaVariablesTemporales: [x, t0]
+  |    |    |    |    |
+  |    |    |    |    |    +--> (visitTerm)
+  |    |    |    |    |    | Idem Expresion
+  |    |    |    |    |    | pilaCodigo: [x, =, t0, =, t1, =]
+  |    |    |    |    |    | pilaVariablesTemporales: [x, t0, t1]
+  |    |    |    |    |    |
+  |    |    |    |    |    |    +--> (visitFactor)
+  |    |    |    |    |    |    | Si la cantidad de hijos de factor es 1, agrega esa variable a la pila de codigo
+  |    |    |    |    |    |    | pilaCodigo: [x, =, t0, =, t1, = b]
+  |    |    |    |    |    |    |
+  |    |    |    |    |    |    +--> (visitT)
+  |    |    |    |    |    |    | T comienza con un caracter especial, que lo agrega a la pila de codigo.
+  |    |    |    |    |    |    | Luego repite lo mismo que hace Opal y no agrega una variable temporal.
+  |    |    |    |    |    |    | pilaCodigo: [x, =, t0, =, t1, = b, *]
+  |    |    |    |    |    |    |
+  |    |    |    |    |    |    |    +--> (visitFactor)
+  |    |    |    |    |    |    |    | pilaCodigo: [x, =, t0, =, t1, = b, *, 2]
+  |    |    |    |    |    |    |    |
+  |    |    |    |    |    |    |    +--> (visitT) Idem Opal
+  |    |    |    |    |    |    |    | Como no tiene hijos, finaliza la búsqueda en profundidad y vuelve a sus nodos padres.
+  |    |    |    |    |    |    | 
+  |    |    |    |    |    |
+  |    |    |    |    |    | Como esta regla generó una variable temporal, y estamos saliendo de la misma, debemos imprimir
+  |    |    |    |    |    | dicha variable por pantalla y quitarla de las pilas.
+  |    |    |    |    |    | pilaCodigo: [x, =, t0, =, t1]
+  |    |    |    |    |    | pilaVariablesTemporales: [x, t0]
+  |    |    |    |    |    | Print("t1 = b * 2")
+  |    |    |    |    |    | 
+  |    |    |    |    |    +--> (visitExp) Idem Opal
+  |    |    |    |    |    | Exp comienza con un caracter especial, que lo agrega a la pila de codigo.
+  |    |    |    |    |    | pilaCodigo: [x, =, t0, =, t1, +]
+  |    |    |    |    |    |
+  |    |    |    |    |    |    +--> (visitTerm) Idem Opal
+  |    |    |    |    |    |    |
+  |    |    |    |    |    |    |    +--> (visitFactor)
+  |    |    |    |    |    |    |    | pilaCodigo: [x, =, t0, =, t1, +, y]
+  |    |    |    |    |    |    |    |
+  |    |    |    |    |    |    |    +--> (visitT) Idem Opal
+  |    |    |    |    |    |    |
+  |    |    |    |    |    |    +--> (visitExp) Idem Opal
+  |    |    |    |    |    |
+  |    |    |    |    | Como esta regla generó una variable temporal, y estamos saliendo de la misma, debemos imprimir
+  |    |    |    |    | dicha variable por pantalla y quitarla de las pilas.
+  |    |    |    |    | pilaCodigo: [x, =, t0]
+  |    |    |    |    | pilaVariablesTemporales: [x]
+  |    |    |    |    | Print("t0 = t1 + y")
+  |    |    |    |    |
+  |    |    |    |    +--> (visitC) 0 Hijos
+  |    |    |    |
+  |    |    |    +--> (visitA) 0 Hijos
+  |    |    |
+  |    |    +--> (visitO) 0 Hijos
+  |    |
+  |    | Como esta regla generó una variable temporal, y estamos saliendo de la misma, debemos imprimir
+  |    | dicha variable por pantalla y quitarla de las pilas. Además, esta regla va a quitar la última variable temporal de la pila de
+  |    | código, ya que se acaba la instrucción.
+  |    | pilaCodigo: []
+  |    | pilaVariablesTemporales: []
+  |    | Print("x = t0")
+  |
+  |    +--> (listaDeclaracion) 0 Hijos
+  

@@ -31,7 +31,6 @@ DOUBLE: 'double' ;
 COMA: ',' ;
 PUNTOYCOMA: ';' ;
 IGUAL: '=';
-RETURN: 'return';
 tipoDato: INT | DOUBLE ;
 comparador : IGUALDAD | DESIGUALDAD | MENOR | MAYOR | MENOR_IGUAL | MAYOR_IGUAL;
 ENTERO : DIGITO+;
@@ -58,7 +57,6 @@ instruccion: inst_simple
 
 inst_simple: declaracion
            | asignar
-           | retorno
            ;
 
 bloque: LA instrucciones LC ;
@@ -74,7 +72,7 @@ listaDeclaracion: IGUAL opal listaDeclaracion
 
 asignar : asignacion PUNTOYCOMA ;
 
-asignacion: ID IGUAL opal;
+asignacion: ID IGUAL (opal|invocacionFuncion) ;
 
 /*-----------------------------               FUNCIONES              ----------------------------------*/
 
@@ -82,7 +80,7 @@ funcion: declaracionFuncion
        | invocacionFuncion PUNTOYCOMA
        ;
 
-declaracionFuncion: tipoDato ID PA param PC bloque;
+declaracionFuncion: tipoDato ID PA param PC;
 
 param: tipoDato ID listaParams
      |
@@ -102,8 +100,6 @@ listaArgs: COMA opal listaArgs
          |
          ;
 
-retorno : RETURN opal PUNTOYCOMA;
-
 /*-----------------------------           WHILE, IF, FOR             ----------------------------------*/
 
 bloqueDeControl: iwhile
@@ -113,11 +109,7 @@ bloqueDeControl: iwhile
 
 iwhile: 'while' PA opal PC (bloque|inst_simple);
 
-iif: 'if' PA opal PC (bloque|inst_simple) ielse;
-
-ielse: 'else' (bloque|inst_simple)
-     |
-     ;
+iif: 'if' PA opal PC (bloque|inst_simple);
 
 ifor: 'for' PA condicionFor PC (bloque|inst_simple);
 
@@ -125,41 +117,9 @@ condicionFor: (ID|asignacion) PUNTOYCOMA opal PUNTOYCOMA asignacion;
 
 /*-----------------------------                OPAL                  ----------------------------------*/
 
-opal : and o
-     ;
-
-o : OR and o
-  |
-  ;
-
-and : comp a
-    ;
-
-a : AND comp a
-  |
-  ;
-
-comp : expresion c
-     ;
-
-c : comparador expresion
-  |
-  ;
-
-expresion : term exp;
-
-exp : SUMA term exp
-    | RESTA term exp
-    |
-    ;
+opal : term or;
 
 term : factor t;
-
-t : MULT factor t
-  | DIV factor t
-  | MOD factor t
-  |
-  ;
 
 factor : ENTERO
        | ID
@@ -167,3 +127,38 @@ factor : ENTERO
        | PA opal PC
        |
        ;
+
+t : MULT factor t
+  | DIV factor t
+  | MOD factor t
+  |
+  ; 
+
+exp : SUMA term exp
+    | RESTA term exp
+    | 
+    ;
+
+comp : exp c
+     |
+     ;
+
+c : comparador term exp
+  |
+  ;
+
+and : comp a
+    |
+    ;
+
+a : AND term and
+  |
+  ;
+
+or : and o
+   |
+   ;
+
+o : OR term or
+  |
+  ;
