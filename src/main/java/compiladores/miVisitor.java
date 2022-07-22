@@ -58,6 +58,7 @@ import compiladores.compiladoresParser.ExpContext;
 import compiladores.compiladoresParser.ExpresionContext;
 import compiladores.compiladoresParser.FactorContext;
 import compiladores.compiladoresParser.FuncionContext;
+import compiladores.compiladoresParser.IelseContext;
 import compiladores.compiladoresParser.IforContext;
 import compiladores.compiladoresParser.IifContext;
 import compiladores.compiladoresParser.Inst_simpleContext;
@@ -246,6 +247,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitCondicionFor(CondicionForContext ctx) {
         addTextoNodo(ctx, "visitCondicionFor");
+
         visitAllHijos(ctx);
         return texto;
     }
@@ -313,13 +315,41 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitIfor(IforContext ctx) {
         addTextoNodo(ctx, "visitIfor");
-        visitAllHijos(ctx);
+        String labelIn = nuevoLabel();
+        String labelOut = nuevoLabel();
+        if(ctx.condicionFor().ID() == null)
+            visit(ctx.condicionFor().getChild(0));
+        System.out.println("label " + labelIn);
+        visit(ctx.condicionFor().opal());
+        System.out.println("ifnjmp " + pilaCodigo.pop() + ", " + labelOut );
+        visit(ctx.getChild(4));
+        visit(ctx.condicionFor().getChild(4));
+        System.out.println("jmp " + labelIn);
+        System.out.println("label " + labelOut);
         return texto;
     }
 
     @Override
     public String visitIif(IifContext ctx) {
         addTextoNodo(ctx, "visitIif");
+        visit(ctx.opal());
+        pilaLabelsTemporales.push(nuevoLabel());
+        System.out.println("ifnjmp " + pilaCodigo.pop() + ", " + pilaLabelsTemporales.lastElement());
+        visit(ctx.getChild(4));
+        if(ctx.ielse().getChildCount() > 0){
+            String labelExit = nuevoLabel();
+            System.out.println("jmp " + labelExit);
+            visit(ctx.ielse());
+            System.out.println("label " + labelExit);
+        }else
+            System.out.println("label " + pilaLabelsTemporales.pop());
+        return texto;
+    }
+
+    @Override
+    public String visitIelse(IelseContext ctx) {
+        addTextoNodo(ctx, "visitIelse");
+        System.out.println("label " + pilaLabelsTemporales.pop());
         visitAllHijos(ctx);
         return texto;
     }
@@ -348,7 +378,14 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitIwhile(IwhileContext ctx) {
         addTextoNodo(ctx, "visitIwhile");
-        visitAllHijos(ctx);
+        String labelIn = nuevoLabel();
+        String labelOut = nuevoLabel();
+        System.out.println("label " + labelIn);
+        visit(ctx.opal());
+        System.out.println("ifnjmp " + pilaCodigo.pop() + ", " + labelOut );
+        visit(ctx.getChild(4));
+        System.out.println("jmp " + labelIn);
+        System.out.println("label " + labelOut);
         return texto;
     }
 
